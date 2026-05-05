@@ -1684,8 +1684,15 @@ async function fetchLatestData(){
       btn.classList.remove('loading'); icon.innerHTML='↻'; return;
     }
 
-    showStatus('Henter OSEBX…','');
-    const osebxMap = await fetchYahooIndex(lastDate, lastOse, 'OSEBX.OL');
+    showStatus('Henter OSEBX fra Euronext…','');
+    // Find the last NAV date from Pareto (most recent row in newNavRows)
+    const lastNavDate = newNavRows[newNavRows.length-1].d;
+
+    let osebxMap = await fetchEuronextOSEBX(lastDate, lastOse);
+    if(!Object.keys(osebxMap).length){
+      showStatus('Euronext feilet — prøver Yahoo Finance…','');
+      osebxMap = await fetchYahooIndex(lastDate, lastOse, 'OSEBX.OL');
+    }
 
     // Merge into navSeries
     const existing = new Set(navSeries.map(r=>r.d));
@@ -1698,9 +1705,7 @@ async function fetchLatestData(){
       } else {
         const idx = navSeries.findIndex(r=>r.d===row.d);
         if(idx>=0){
-          // Always update NAV to latest value
           navSeries[idx].n = row.n;
-          // Fill OSEBX if missing
           if(!navSeries[idx].o && osebxMap[row.d]){
             navSeries[idx].o = osebxMap[row.d];
             updatedOse++;
@@ -1708,9 +1713,19 @@ async function fetchLatestData(){
         }
       }
     }
-    // Fill OSEBX for existing entries too
+
+    // Fill OSEBX for existing entries, but only up to and including lastNavDate
     for(const row of navSeries){
+      if(row.d > lastNavDate) break;
       if(!row.o && osebxMap[row.d]){ row.o=osebxMap[row.d]; updatedOse++; }
+    }
+
+    // Make sure the last NAV entry has matching OSEBX
+    const lastNavIdx = navSeries.findIndex(r=>r.d===lastNavDate);
+    if(lastNavIdx>=0 && !navSeries[lastNavIdx].o){
+      // Find closest available OSEBX on or before lastNavDate
+      const closestOse = Object.keys(osebxMap).filter(d=>d<=lastNavDate).sort().pop();
+      if(closestOse) navSeries[lastNavIdx].o = osebxMap[closestOse];
     }
     navSeries.sort((a,b)=>a.d<b.d?-1:1);
 
@@ -1826,6 +1841,42 @@ async function fetchMorningstarNAV(fromDate){
 }
 
 // Generic Yahoo Finance index fetcher
+// Euronext Live — OSEBX historisk data (primærkilde)
+async function fetchEuronextOSEBX(fromDate, lastKnown){
+  try{
+    // Euronext udokumentert chart API
+    const url = `https://live.euronext.com/intraday_chart/getChartData/NO0007035327-XOSL/max`;
+    const text = await proxyFetch(url, 12000);
+    if(!text) return {};
+    const j = JSON.parse(text);
+    // Response is array of [timestamp_ms, open, high, low, close, volume]
+    if(!Array.isArray(j)) return {};
+    const map = {};
+    const cutMs = new Date(fromDate).getTime() - 86400*1000;
+    j.forEach(row=>{
+      const ts = row[0];
+      const close = row[4] ?? row[1]; // close or open
+      if(!ts || !close) return;
+      if(ts < cutMs) return;
+      const val = parseFloat(parseFloat(close).toFixed(4));
+      if(val < 100) return;
+      if(lastKnown && (val > lastKnown*1.35 || val < lastKnown*0.65)) return;
+      // Oslo time
+      const d = new Date(ts + 7200000).toISOString().slice(0,10);
+      if(!map[d] || val > 0) map[d] = val;
+    });
+    if(Object.keys(map).length > 0){
+      const keys = Object.keys(map).sort();
+      console.log('Euronext OSEBX:', keys.slice(-3), keys.slice(-3).map(k=>map[k]));
+      return map;
+    }
+    return {};
+  }catch(e){
+    console.warn('Euronext OSEBX failed:', e.message);
+    return {};
+  }
+}
+
 async function fetchYahooIndex(fromDate, lastKnown, ticker){
   // Try multiple tickers for robustness
   const tickers = ticker === 'OSEBX.OL'

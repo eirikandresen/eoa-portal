@@ -1685,7 +1685,7 @@ async function fetchLatestData(){
     }
 
     showStatus('Henter OSEBX…','');
-    const osebxMap = await fetchYahooIndex(lastDate, lastOse, '%5EOSEBX');
+    const osebxMap = await fetchYahooIndex(lastDate, lastOse, 'OSEBX.OL');
 
     // Merge into navSeries
     const existing = new Set(navSeries.map(r=>r.d));
@@ -1827,30 +1827,47 @@ async function fetchMorningstarNAV(fromDate){
 
 // Generic Yahoo Finance index fetcher
 async function fetchYahooIndex(fromDate, lastKnown, ticker){
-  try{
-    const start = Math.floor(new Date(fromDate).getTime()/1000);
-    const end   = Math.floor(Date.now()/1000) + 86400*2;
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&period1=${start}&period2=${end}`;
-    const text = await proxyFetch(url, 10000);
-    if(!text) return {};
-    const j = JSON.parse(text);
-    const result = j?.chart?.result?.[0];
-    if(!result) return {};
-    const timestamps = result.timestamp||[];
-    const closes = result.indicators?.quote?.[0]?.close||[];
-    const map = {};
-    timestamps.forEach((t,i)=>{
-      const v = closes[i];
-      if(v==null) return;
-      const val = parseFloat(parseFloat(v).toFixed(4));
-      if(val < 100) return;
-      if(lastKnown && (val > lastKnown*1.35 || val < lastKnown*0.65)) return;
-      const d = new Date((t+3600)*1000).toISOString().slice(0,10);
-      map[d] = val;
-    });
-    console.log('Index',ticker,'fetched:', Object.keys(map).slice(-3), Object.values(map).slice(-3));
-    return map;
-  }catch(e){ console.warn('Index fetch failed:',e.message); return {}; }
+  // Try multiple tickers for robustness
+  const tickers = ticker === 'OSEBX.OL'
+    ? ['OSEBX.OL', '%5EOSEBX', 'OBX.OL']
+    : [ticker];
+
+  for(const t of tickers){
+    try{
+      const start = Math.floor(new Date(fromDate).getTime()/1000);
+      const end   = Math.floor(Date.now()/1000) + 86400*2;
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${t}?interval=1d&period1=${start}&period2=${end}`;
+      const text = await proxyFetch(url, 10000);
+      if(!text) continue;
+      const j = JSON.parse(text);
+      const result = j?.chart?.result?.[0];
+      if(!result) continue;
+      const timestamps = result.timestamp||[];
+      const closes = result.indicators?.quote?.[0]?.close||[];
+      if(!timestamps.length) continue;
+      const map = {};
+      timestamps.forEach((ts,i)=>{
+        const v = closes[i];
+        if(v==null) return;
+        const val = parseFloat(parseFloat(v).toFixed(4));
+        if(val < 100) return;
+        if(lastKnown && (val > lastKnown*1.35 || val < lastKnown*0.65)) return;
+        // Use Oslo timezone — try both UTC+1 and UTC+2, pick the one that's a weekday
+        const d1 = new Date((ts+3600)*1000).toISOString().slice(0,10);  // UTC+1
+        const d2 = new Date((ts+7200)*1000).toISOString().slice(0,10);  // UTC+2
+        const dow1 = new Date(d1).getDay();
+        const dow2 = new Date(d2).getDay();
+        // Prefer UTC+2 (summer time), fallback to UTC+1
+        const d = (dow2 >= 1 && dow2 <= 5) ? d2 : d1;
+        map[d] = val;
+      });
+      if(Object.keys(map).length > 0){
+        console.log('OSEBX fetched with ticker', t, ':', Object.keys(map).slice(-3), Object.values(map).slice(-3));
+        return map;
+      }
+    }catch(e){ console.warn('Index fetch failed for',t,':',e.message); }
+  }
+  return {};
 }
 
 // ═══════════════════════════════════════════════

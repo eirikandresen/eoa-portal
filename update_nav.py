@@ -186,8 +186,42 @@ def fetch_morningstar_nav(from_date):
 
 # ─── OSEBX ───────────────────────────────────────────────────────────────────
 
-def fetch_osebx(from_date, last_known):
-    """Yahoo Finance ^OSEBX."""
+def fetch_euronext_osebx(from_date, last_known):
+    """Euronext Live chart API — primary OSEBX source."""
+    try:
+        url = 'https://live.euronext.com/intraday_chart/getChartData/NO0007035327-XOSL/max'
+        r = requests.get(url, headers=HEADERS, timeout=15)
+        if not r.ok:
+            print(f'Euronext OSEBX HTTP {r.status_code}')
+            return {}
+        data = r.json()
+        if not isinstance(data, list):
+            return {}
+        cut_ms = int(datetime.strptime(from_date, '%Y-%m-%d').timestamp() * 1000) - 86400000
+        map_ = {}
+        for row in data:
+            ts = row[0] if len(row) > 0 else None
+            close = row[4] if len(row) > 4 else (row[1] if len(row) > 1 else None)
+            if not ts or not close:
+                continue
+            if ts < cut_ms:
+                continue
+            val = round(float(close), 4)
+            if not valid_osebx(val, last_known):
+                continue
+            # Oslo time UTC+2
+            d = datetime.utcfromtimestamp(ts/1000 + 7200).strftime('%Y-%m-%d')
+            map_[d] = val
+        if map_:
+            keys = sorted(map_.keys())
+            print(f'Euronext OSEBX: {len(map_)} rows, last={keys[-1]}={map_[keys[-1]]}')
+        return map_
+    except Exception as e:
+        print(f'Euronext OSEBX failed: {e}')
+        return {}
+
+
+
     try:
         start = int(datetime.strptime(from_date, '%Y-%m-%d').timestamp())
         end   = int((datetime.now() + timedelta(days=2)).timestamp())
@@ -277,9 +311,13 @@ def main():
         return
 
     # ── Fetch OSEBX ────────────────────────────────────
-    osebx_map = fetch_osebx(from_date, last_ose)
+    osebx_map = fetch_euronext_osebx(from_date, last_ose)
+    if not osebx_map:
+        print('Euronext OSEBX failed, trying Yahoo Finance...')
+        osebx_map = fetch_osebx(from_date, last_ose)
 
     # ── Merge ──────────────────────────────────────────
+    last_nav_date = new_rows[-1]['d']
     added = 0
     filled = 0
     for row in new_rows:
@@ -292,7 +330,6 @@ def main():
             existing_dates.add(row['d'])
             added += 1
         else:
-            # Update existing entry
             idx = next((i for i, r in enumerate(existing) if r['d'] == row['d']), None)
             if idx is not None:
                 existing[idx]['n'] = row['n']
@@ -300,11 +337,22 @@ def main():
                     existing[idx]['o'] = osebx_map[row['d']]
                     filled += 1
 
-    # Fill missing OSEBX in existing rows
+    # Fill missing OSEBX only up to last NAV date
     for row in existing:
+        if row['d'] > last_nav_date:
+            break
         if not row.get('o') and osebx_map.get(row['d']):
             row['o'] = osebx_map[row['d']]
             filled += 1
+
+    # Ensure last NAV entry has OSEBX — use closest available date if exact missing
+    last_nav_entry = next((r for r in reversed(existing) if r['d'] == last_nav_date), None)
+    if last_nav_entry and not last_nav_entry.get('o'):
+        closest = max((d for d in osebx_map if d <= last_nav_date), default=None)
+        if closest:
+            last_nav_entry['o'] = osebx_map[closest]
+            filled += 1
+            print(f'Used closest OSEBX {closest}={osebx_map[closest]} for NAV date {last_nav_date}')
 
     save(existing)
     last = existing[-1]

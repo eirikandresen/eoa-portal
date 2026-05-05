@@ -254,7 +254,7 @@ def fetch_euronext_osebx(from_date, last_known):
 
 def import_xlsx():
     print(f'Found {XLSX.name}, importing...')
-    df = pd.read_excel(XLSX, sheet_name='Sheet3', header=None)
+    df = pd.read_excel(XLSX, sheet_name='Avkastning', header=None)
     data = df.iloc[6:].copy()
     data.columns = ['date', 'pan_nav', 'osefx']
     data = data.dropna(subset=['date', 'pan_nav'])

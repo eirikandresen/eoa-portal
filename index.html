@@ -1,0 +1,1946 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EOA Capital — Pareto Aksje Norge A</title>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root {
+  --cream: #f5f2ec;
+  --white: #ffffff;
+  --offwhite: #faf9f6;
+  --border: #e2ddd5;
+  --border2: #d0c9be;
+  --text: #1a1814;
+  --text2: #5a5549;
+  --text3: #9a9088;
+  --green: #1a5c35;
+  --green2: #2a7d4f;
+  --green-light: #eaf4ee;
+  --red: #8b2020;
+  --red-light: #fdf0f0;
+  --gold: #8a6a20;
+  --gold-light: #fdf6e3;
+  --blue: #1a3a6b;
+  --blue-light: #eef2f9;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* LOGIN */
+#login-screen {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--white);
+}
+.login-box {
+  width: 380px;
+  padding: 48px;
+  text-align: center;
+}
+.login-logo {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 32px;
+}
+.login-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.login-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 36px;
+  font-weight: 300;
+}
+.login-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--offwhite);
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+.login-input:focus { border-color: var(--green); }
+.login-btn {
+  width: 100%;
+  padding: 13px;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-btn:hover { background: var(--green2); }
+.login-err { font-size: 12px; color: var(--red); margin-top: 10px; display: none; }
+.login-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin: 20px 0;
+  color: var(--text3); font-size: 12px;
+}
+.login-divider::before, .login-divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* TOPBAR */
+#portal { display: none; }
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 100;
+}
+.topbar-brand {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: 0.03em;
+  display: flex; align-items: center; gap: 10px;
+}
+.topbar-brand span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-family: 'Inter', sans-serif;
+}
+.nav-links {
+  display: flex; gap: 2px; list-style: none;
+}
+.nav-links a {
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  text-decoration: none;
+}
+.nav-links a:hover { background: var(--cream); color: var(--text); }
+.nav-links a.active { color: var(--green); font-weight: 500; }
+.topbar-right {
+  display: flex; align-items: center; gap: 12px;
+}
+.update-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  background: var(--green-light);
+  border: 1px solid #c5dece;
+  color: var(--green);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.update-btn:hover { background: #d5ead9; }
+.update-btn.loading { opacity: 0.6; cursor: not-allowed; }
+.upload-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.upload-btn:hover { border-color: var(--text2); color: var(--text); }
+.nav-date { font-size: 12px; color: var(--text3); }
+.nav-logout {
+  font-size: 12px; color: var(--text3); cursor: pointer;
+  padding: 5px 10px; border-radius: 2px;
+  transition: all 0.15s;
+}
+.nav-logout:hover { color: var(--red); }
+
+/* STATUS BAR */
+.status-bar {
+  background: var(--gold-light);
+  border-bottom: 1px solid #e8d8a0;
+  padding: 8px 40px;
+  font-size: 12px;
+  color: var(--gold);
+  display: none;
+}
+
+/* MAIN */
+.main { padding: 32px 40px; max-width: 1360px; margin: 0 auto; }
+.page { display: none; }
+.page.active { display: block; }
+
+/* PAGE HEADER */
+.pg-header { margin-bottom: 28px; }
+.pg-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.pg-sub { font-size: 13px; color: var(--text3); font-weight: 300; }
+
+/* KPI CARDS */
+.kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 24px; }
+.kpi-card {
+  background: var(--white);
+  padding: 22px 24px;
+}
+.kpi-lbl {
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.kpi-val {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1;
+}
+.kpi-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; padding: 2px 8px; border-radius: 1px;
+  font-weight: 500;
+}
+.pos { background: var(--green-light); color: var(--green); }
+.neg { background: var(--red-light); color: var(--red); }
+.neutral { background: var(--blue-light); color: var(--blue); }
+.kpi-note { font-size: 11px; color: var(--text3); margin-top: 5px; font-weight: 300; }
+
+/* CHART CARD */
+.chart-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+.chart-card-head {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.chart-card-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+}
+.period-tabs { display: flex; gap: 2px; }
+.ptab {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  background: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.15s;
+  border-radius: 1px;
+}
+.ptab:hover { background: var(--cream); }
+.ptab.active { background: var(--green); color: white; border-color: var(--green); }
+.date-inp {
+  padding: 4px 8px;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.date-inp:focus { border-color: var(--green); }
+
+.chart-wrap {
+  padding: 20px 24px 12px;
+  position: relative;
+}
+canvas.chart {
+  width: 100% !important;
+  display: block;
+  cursor: crosshair;
+}
+.chart-legend {
+  display: flex; gap: 20px;
+  padding: 0 24px 16px;
+  flex-wrap: wrap;
+}
+.leg { display: flex; align-items: center; gap: 7px; font-size: 12px; color: var(--text3); }
+.leg-dot { width: 10px; height: 2px; border-radius: 1px; }
+
+/* TOOLTIP */
+.chart-tooltip {
+  position: absolute;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  pointer-events: none;
+  z-index: 50;
+  display: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.tt-date { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+.tt-row { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 2px; }
+.tt-lbl { color: var(--text2); }
+.tt-val { font-weight: 500; }
+
+/* DATA TABLE */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-size: 10.5px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text3);
+  font-weight: 400; text-align: right;
+  padding: 10px 16px;
+  background: var(--cream);
+  border-bottom: 1px solid var(--border);
+}
+.data-table th:first-child { text-align: left; }
+.data-table td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--text2);
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+.data-table td:first-child { text-align: left; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: var(--offwhite); }
+.bold-row td { font-weight: 600; color: var(--text) !important; background: var(--cream) !important; }
+.pos-val { color: var(--green) !important; font-weight: 500 !important; }
+.neg-val { color: var(--red) !important; font-weight: 500 !important; }
+.gold-val { color: var(--gold) !important; font-weight: 500 !important; }
+
+/* BAR IN CELL */
+.bar-cell { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
+.bar-bg { width: 80px; height: 4px; background: var(--border); border-radius: 2px; }
+.bar-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.3s; }
+
+/* TWO COL */
+.two-col { display: grid; grid-template-columns: 3fr 2fr; gap: 20px; margin-bottom: 20px; }
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+}
+.card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.card-title {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 15px; font-weight: 400; color: var(--text);
+}
+.card-body { padding: 20px; }
+.table-scroll { overflow-x: auto; }
+
+/* REGN */
+.regn-row {
+  display: flex; justify-content: space-between;
+  padding: 11px 0; border-bottom: 1px solid var(--border);
+}
+.regn-row:last-child { border-bottom: none; }
+.regn-key { font-size: 13px; color: var(--text2); }
+.regn-val { font-size: 13px; font-weight: 500; color: var(--text); }
+.year-header {
+  font-size: 11px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--text3);
+  padding: 8px 0 12px;
+}
+
+/* UPLOAD ZONE */
+.upload-zone {
+  border: 2px dashed var(--border2);
+  border-radius: 2px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--offwhite);
+}
+.upload-zone:hover, .upload-zone.dragover {
+  border-color: var(--green);
+  background: var(--green-light);
+}
+.upload-zone-icon { font-size: 32px; margin-bottom: 12px; }
+.upload-zone-text { font-size: 14px; color: var(--text2); margin-bottom: 6px; }
+.upload-zone-sub { font-size: 12px; color: var(--text3); }
+
+/* ANALYSE */
+.analyse-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.info-box {
+  background: var(--blue-light);
+  border: 1px solid #c5d0e8;
+  border-radius: 2px;
+  padding: 14px 16px;
+  font-size: 12px;
+  color: var(--blue);
+  line-height: 1.6;
+  margin-top: 14px;
+}
+
+/* LOADING SPINNER */
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(26,92,53,0.3);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+input[type=file] { display: none; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">EOA Capital AS</div>
+    <div class="login-title">Min investorportal</div>
+    <div class="login-sub">Logg inn for å se porteføljeoversikt</div>
+    <input class="login-input" type="password" id="pw-input" placeholder="Passord"
+      onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">Logg inn</button>
+    <div class="login-err" id="login-err">Feil passord</div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portal">
+  <nav class="topbar">
+    <div class="topbar-brand">
+      EOA Capital AS
+      <span>Investeringsportal</span>
+    </div>
+    <ul class="nav-links">
+      <li><a class="active" onclick="showPage('oversikt',this)">Oversikt</a></li>
+      <li><a onclick="showPage('avkastning',this)">Avkastning</a></li>
+      <li><a onclick="showPage('transaksjoner',this)">Transaksjoner</a></li>
+      <li><a onclick="showPage('analyse',this)">Analyse</a></li>
+      <li><a onclick="showPage('regnskap',this)">Regnskap</a></li>
+    </ul>
+    <div class="topbar-right">
+      <button class="update-btn" id="update-btn" onclick="fetchLatestData()">
+        <span id="update-icon">↻</span> Oppdater NAV
+      </button>
+      <button class="upload-btn" onclick="document.getElementById('xlsx-input').click()">
+        ↑ Last opp Excel
+      </button>
+      <input type="file" id="xlsx-input" accept=".xlsx,.xls" onchange="handleXlsxUpload(event)">
+      <span class="nav-date" id="nav-date"></span>
+      <span class="nav-logout" onclick="doLogout()">Logg ut</span>
+    </div>
+  </nav>
+
+  <div class="status-bar" id="status-bar"></div>
+
+  <div class="main">
+
+    <!-- OVERSIKT -->
+    <div id="page-oversikt" class="page active">
+      <div class="pg-header">
+        <div class="pg-title">Porteføljeoversikt</div>
+        <div class="pg-sub">Pareto Aksje Norge A · NAV per <span id="upd-date">—</span></div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Markedsverdi</div>
+          <div class="kpi-val" id="kpi-mv">—</div>
+          <span class="kpi-badge pos" id="kpi-gain-badge">—</span>
+          <div class="kpi-note">Urealisert gevinst</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Tidsvektet avkastning (TWR)</div>
+          <div class="kpi-val" id="kpi-twr">—</div>
+          <span class="kpi-badge pos" id="kpi-twr-pa">—</span>
+          <div class="kpi-note">p.a. fra des. 2021</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Pengevektet avkastning (IRR)</div>
+          <div class="kpi-val" id="kpi-mwr">—</div>
+          <span class="kpi-badge pos" id="kpi-mwr-pa">—</span>
+          <div class="kpi-note">Annualisert IRR</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Fondet PAN A — fra oppstart</div>
+          <div class="kpi-val" id="kpi-fund">—</div>
+          <span class="kpi-badge neutral" id="kpi-fund-pa">—</span>
+          <div class="kpi-note">Buy-and-hold des. 2021</div>
+        </div>
+      </div>
+
+      <!-- CHARTS SIDE BY SIDE -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div class="chart-card-title">PAN A og OSEBX — avkastning</div>
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <div class="period-tabs">
+                <button class="ptab active" onclick="setChartPeriod('all',this)">Alt</button>
+                <button class="ptab" onclick="setChartPeriod('3y',this)">3Å</button>
+                <button class="ptab" onclick="setChartPeriod('1y',this)">1Å</button>
+                <button class="ptab" onclick="setChartPeriod('ytd',this)">YTD</button>
+                <button class="ptab" id="ptab-custom" onclick="setChartPeriod('custom',this)">Egendefinert</button>
+              </div>
+              <div id="custom-date-row" style="display:none;align-items:center;gap:6px">
+                <input type="date" id="date-from" class="date-inp" onchange="applyCustomDates()">
+                <span style="font-size:12px;color:var(--text3)">→</span>
+                <input type="date" id="date-to" class="date-inp" onchange="applyCustomDates()">
+              </div>
+            </div>
+          </div>
+          <div class="chart-wrap" style="padding-bottom:8px">
+            <canvas id="chart-returns" height="180" class="chart"></canvas>
+            <div class="chart-tooltip" id="tt-returns"></div>
+          </div>
+          <div class="chart-legend">
+            <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>PAN A</div>
+            <div class="leg"><div class="leg-dot" style="background:var(--gold);opacity:.8"></div>OSEBX</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-head">
+            <div class="chart-card-title">Porteføljeverdi — kr</div>
+          </div>
+          <div class="chart-wrap" style="padding-bottom:8px">
+            <canvas id="chart-mv" height="180" class="chart"></canvas>
+            <div class="chart-tooltip" id="tt-mv"></div>
+          </div>
+          <div class="chart-legend">
+            <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Markedsverdi</div>
+            <div class="leg"><div class="leg-dot" style="background:var(--border2)"></div>Investert kapital</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick holdings + period table -->
+      <div class="two-col">
+        <div class="card">
+          <div class="card-head"><div class="card-title">Avkastning per periode</div></div>
+          <table class="data-table">
+            <thead><tr>
+              <th>Periode</th>
+              <th>PAN A NAV</th>
+              <th>OSEBX</th>
+              <th>Din portefølje</th>
+            </tr></thead>
+            <tbody id="period-tbody"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Beholdning</div></div>
+          <div class="card-body">
+            <div class="regn-row">
+              <div class="regn-key">Antall andeler</div>
+              <div class="regn-val" id="h-units">—</div>
+            </div>
+            <div class="regn-row">
+              <div class="regn-key">NAV per andel</div>
+              <div class="regn-val" id="h-nav">—</div>
+            </div>
+            <div class="regn-row">
+              <div class="regn-key">Markedsverdi</div>
+              <div class="regn-val" id="h-mv">—</div>
+            </div>
+            <div class="regn-row">
+              <div class="regn-key">Kostpris (investert)</div>
+              <div class="regn-val" id="h-cost">—</div>
+            </div>
+            <div class="regn-row" style="border-top:2px solid var(--border);padding-top:14px;margin-top:4px">
+              <div class="regn-key" style="font-weight:600;color:var(--text)">Urealisert gevinst</div>
+              <div class="regn-val pos-val" id="h-gain">—</div>
+            </div>
+            <div class="regn-row">
+              <div class="regn-key" style="font-weight:600;color:var(--text)">Avkastning %</div>
+              <div class="regn-val pos-val" id="h-pct">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AVKASTNING -->
+    <div id="page-avkastning" class="page">
+      <div class="pg-header">
+        <div class="pg-title">Avkastningsanalyse</div>
+        <div class="pg-sub">Tidsvektet (TWR) og pengevektet (MWR/IRR) — daglig NAV-historikk</div>
+      </div>
+
+      <div class="kpi-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Din TWR — fra start</div>
+          <div class="kpi-val" id="av-twr">—</div>
+          <span class="kpi-badge pos" id="av-twr-pa">—</span>
+          <div class="kpi-note">Fondets NAV-utvikling, kjedet mellom innskudd</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Din MWR / IRR — fra start</div>
+          <div class="kpi-val" id="av-mwr">—</div>
+          <span class="kpi-badge pos" id="av-mwr-pa">—</span>
+          <div class="kpi-note">Vektet mot timing av innskudd</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">PAN A fondet — fra start</div>
+          <div class="kpi-val" id="av-fund">—</div>
+          <span class="kpi-badge neutral" id="av-fund-pa">—</span>
+          <div class="kpi-note">Buy-and-hold fra des. 2021</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><div class="card-title">Avkastning per innskudd — frem til i dag</div></div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr>
+              <th>Dato</th>
+              <th>Investering</th>
+              <th>NAV kjøpt</th>
+              <th>NAV i dag</th>
+              <th>Total avk.</th>
+              <th>Annualisert</th>
+              <th>OSEBX ann.</th>
+            </tr></thead>
+            <tbody id="twr-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><div class="card-title">Årlig avkastning — PAN A vs. OSEBX</div></div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>År</th><th>PAN A</th><th>OSEBX</th><th>Differanse</th></tr></thead>
+            <tbody id="annual-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRANSAKSJONER -->
+    <div id="page-transaksjoner" class="page">
+      <div class="pg-header">
+        <div class="pg-title">Transaksjoner</div>
+        <div class="pg-sub">Alle kjøp i Pareto Aksje Norge A siden oppstart</div>
+      </div>
+      <div class="card">
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr>
+              <th>Dato</th>
+              <th>Andeler</th>
+              <th>NAV</th>
+              <th>Investering</th>
+              <th>Akkum. andeler</th>
+              <th>MV i dag</th>
+              <th>Gevinst</th>
+              <th>Avk. %</th>
+            </tr></thead>
+            <tbody id="tx-tbody"></tbody>
+            <tfoot id="tx-tfoot"></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANALYSE -->
+    <div id="page-analyse" class="page">
+      <div class="pg-header">
+        <div class="pg-title">Risiko og skatteanalyse</div>
+        <div class="pg-sub">Basert på daglig NAV-historikk</div>
+      </div>
+
+      <div class="kpi-row" style="margin-bottom:20px">
+        <div class="kpi-card">
+          <div class="kpi-lbl">Sharpe Ratio</div>
+          <div class="kpi-val" id="r-sharpe">—</div>
+          <div class="kpi-note">Rf = 4%, daglig volatilitet ann.</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Volatilitet (p.a.)</div>
+          <div class="kpi-val" id="r-vol">—</div>
+          <div class="kpi-note">Standardavvik annualisert</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Max Drawdown</div>
+          <div class="kpi-val" id="r-dd">—</div>
+          <div class="kpi-note">Største fall fra topp</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-lbl">Beste 12-mnd periode</div>
+          <div class="kpi-val" id="r-best">—</div>
+          <div class="kpi-note" id="r-best-period">—</div>
+        </div>
+      </div>
+
+      <div class="analyse-grid">
+        <!-- Skatt PAN -->
+        <div class="card">
+          <div class="card-head"><div class="card-title">Skattekalkulator — Pareto Aksje Norge A</div></div>
+          <div class="card-body">
+            <div class="regn-row"><div class="regn-key">Markedsverdi i dag</div><div class="regn-val" id="sk-mv">—</div></div>
+            <div class="regn-row"><div class="regn-key">Kostpris (investert)</div><div class="regn-val" id="sk-cost">—</div></div>
+            <div class="regn-row"><div class="regn-key">Gevinst ved salg</div><div class="regn-val pos-val" id="sk-gain">—</div></div>
+            <div class="regn-row"><div class="regn-key">Skatt i AS (fritaksmetoden, 0,66%)</div><div class="regn-val neg-val" id="sk-tax-as">—</div></div>
+            <div class="regn-row" style="border-top:2px solid var(--border);padding-top:14px;margin-top:4px">
+              <div class="regn-key" style="font-weight:600;color:var(--text)">Netto etter AS-skatt</div>
+              <div class="regn-val gold-val" id="sk-net-as">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Likvidasjon -->
+        <div class="card">
+          <div class="card-head"><div class="card-title">Likvidasjon — hva sitter du igjen med privat?</div></div>
+          <div class="card-body">
+            <div class="regn-row"><div class="regn-key">Kontanter i AS etter skatt</div><div class="regn-val" id="liq-as">—</div></div>
+            <div class="regn-row"><div class="regn-key">− Din inngangsverdi (innskutt EK)</div><div class="regn-val">2 772 000 kr</div></div>
+            <div class="regn-row"><div class="regn-key">− Akkumulert skjerming</div><div class="regn-val" id="liq-skjerm">—</div></div>
+            <div class="regn-row"><div class="regn-key">Skattepliktig utdeling</div><div class="regn-val pos-val" id="liq-skattepliktig">—</div></div>
+            <div class="regn-row"><div class="regn-key">Privat skatt (37,84%)</div><div class="regn-val neg-val" id="liq-priv-tax">—</div></div>
+            <div class="regn-row" style="border-top:2px solid var(--border);padding-top:14px;margin-top:4px">
+              <div class="regn-key" style="font-weight:600;color:var(--text)">Du sitter igjen med</div>
+              <div class="regn-val" style="font-family:'Libre Baskerville',serif;font-size:18px;color:var(--green);font-weight:400" id="liq-netto">—</div>
+            </div>
+            <div class="regn-row">
+              <div class="regn-key">Effektiv skattesats</div>
+              <div class="regn-val" id="liq-eff">—</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGNSKAP -->
+    <div id="page-regnskap" class="page">
+      <div class="pg-header">
+        <div class="pg-title">Regnskap</div>
+        <div class="pg-sub">EOA Capital AS — Brønnøysundregistrene via proff.no</div>
+      </div>
+
+      <!-- EK Chart + KPIs -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px">
+
+        <!-- BAR CHART -->
+        <div class="chart-card">
+          <div class="chart-card-head"><div class="chart-card-title">Egenkapitalutvikling</div></div>
+          <div class="chart-wrap"><canvas id="chart-ek" height="160" class="chart"></canvas></div>
+          <div class="chart-legend" style="padding:0 20px 14px">
+            <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Egenkapital</div>
+            <div class="leg"><div class="leg-dot" style="background:var(--gold);opacity:.8"></div>Årsresultat</div>
+          </div>
+        </div>
+
+        <!-- NØKKELTALL -->
+        <div class="card">
+          <div class="card-head"><div class="card-title">Nøkkeltall — siste år</div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:0">
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-bottom:20px">
+              <div style="background:var(--white);padding:20px">
+                <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">EK-andel</div>
+                <div id="kpi-ek-andel" style="font-family:'Libre Baskerville',serif;font-size:28px;font-weight:400;color:var(--text);line-height:1;margin-bottom:6px">—</div>
+                <div id="kpi-ek-andel-sub" style="font-size:11px;color:var(--text3)">EK / Sum eiendeler</div>
+              </div>
+              <div style="background:var(--white);padding:20px">
+                <div style="font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:8px">EK-avkastning (ROE)</div>
+                <div id="kpi-roe" style="font-family:'Libre Baskerville',serif;font-size:28px;font-weight:400;color:var(--text);line-height:1;margin-bottom:6px">—</div>
+                <div id="kpi-roe-sub" style="font-size:11px;color:var(--text3)">Årsresultat / Gj.snitt EK</div>
+              </div>
+            </div>
+
+            <div id="regn-kpi-rows"></div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Multi-year tables -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><div class="card-title">Resultatregnskap</div></div>
+        <div class="table-scroll"><table class="data-table" id="regn-result-table"><thead id="regn-result-head"></thead><tbody id="regn-result-body"></tbody></table></div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><div class="card-title">Balanse</div></div>
+        <div class="table-scroll"><table class="data-table" id="regn-balanse-table"><thead id="regn-balanse-head"></thead><tbody id="regn-balanse-body"></tbody></table></div>
+      </div>
+
+      <!-- Skjerming -->
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-head"><div class="card-title">Skjermingsfradrag</div></div>
+        <div class="table-scroll">
+          <table class="data-table">
+            <thead><tr><th>År</th><th>Innskutt EK primo</th><th>Skjermingsrente</th><th>Årets skjerming</th><th>Akkumulert</th></tr></thead>
+            <tbody id="skjerm-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /portal -->
+
+<script>
+// ═══════════════════════════════════════════════
+// EMBEDDED NAV DATA (from Excel upload)
+// ═══════════════════════════════════════════════
+[{"d":"2021-12-20","n":8645.2195,"o":1160.73},{"d":"2021-12-21","n":8762.2985,"o":1185.26},{"d":"2021-12-22","n":8772.7597,"o":1185.88},{"d":"2021-12-23","n":8917.8474,"o":1195.42},{"d":"2021-12-24","n":8917.8474,"o":1195.42},{"d":"2021-12-27","n":8976.8555,"o":1200.3},{"d":"2021-12-28","n":9061.9234,"o":1204.76},{"d":"2021-12-29","n":9034.6233,"o":1199.34},{"d":"2021-12-30","n":9082.9589,"o":1201.43},{"d":"2021-12-31","n":9082.2421,"o":1201.43},{"d":"2022-01-03","n":9116.7322,"o":1211.32},{"d":"2022-01-04","n":9176.7809,"o":1213.54},{"d":"2022-01-05","n":9225.0505,"o":1221.2},{"d":"2022-01-06","n":9183.9628,"o":1204.44},{"d":"2022-01-07","n":9262.3949,"o":1207.93},{"d":"2022-01-10","n":9186.2656,"o":1190.13},{"d":"2022-01-11","n":9269.2773,"o":1196.98},{"d":"2022-01-12","n":9417.0574,"o":1216.04},{"d":"2022-01-13","n":9439.0624,"o":1215.53},{"d":"2022-01-14","n":9475.197,"o":1218.95},{"d":"2022-01-17","n":9488.7893,"o":1217.63},{"d":"2022-01-18","n":9453.7858,"o":1215.43},{"d":"2022-01-19","n":9344.0939,"o":1205.41},{"d":"2022-01-20","n":9338.706,"o":1205.03},{"d":"2022-01-21","n":9205.7115,"o":1182.75},{"d":"2022-01-24","n":8880.1862,"o":1142.0},{"d":"2022-01-25","n":8992.3554,"o":1151.77},{"d":"2022-01-26","n":9180.562,"o":1184.23},{"d":"2022-01-27","n":9256.0045,"o":1182.89},{"d":"2022-01-28","n":9164.7989,"o":1170.08},{"d":"2022-01-31","n":9154.4862,"o":1174.86},{"d":"2022-02-01","n":9266.5161,"o":1190.83},{"d":"2022-02-02","n":9356.2532,"o":1197.39},{"d":"2022-02-03","n":9316.1208,"o":1185.9},{"d":"2022-02-04","n":9370.5029,"o":1192.49},{"d":"2022-02-07","n":9440.7818,"o":1204.2},{"d":"2022-02-08","n":9368.6293,"o":1190.53},{"d":"2022-02-09","n":9441.5208,"o":1203.64},{"d":"2022-02-10","n":9524.7881,"o":1206.47},{"d":"2022-02-11","n":9649.5438,"o":1213.67},{"d":"2022-02-14","n":9505.9196,"o":1198.69},{"d":"2022-02-15","n":9460.5619,"o":1191.11},{"d":"2022-02-16","n":9536.9798,"o":1201.05},{"d":"2022-02-17","n":9448.4371,"o":1193.66},{"d":"2022-02-18","n":9454.2164,"o":1188.94},{"d":"2022-02-21","n":9392.2701,"o":1183.35},{"d":"2022-02-22","n":9346.2173,"o":1179.84},{"d":"2022-02-23","n":9370.7442,"o":1188.36},{"d":"2022-02-24","n":9205.2152,"o":1174.34},{"d":"2022-02-25","n":9351.6634,"o":1185.91},{"d":"2022-02-28","n":9373.7195,"o":1202.17},{"d":"2022-03-01","n":9399.3855,"o":1222.77},{"d":"2022-03-02","n":9398.5853,"o":1228.67},{"d":"2022-03-03","n":9368.4067,"o":1213.17},{"d":"2022-03-04","n":9145.4141,"o":1190.4},{"d":"2022-03-07","n":8965.6137,"o":1181.14},{"d":"2022-03-08","n":8898.5771,"o":1183.51},{"d":"2022-03-09","n":9066.7258,"o":1191.74},{"d":"2022-03-10","n":9158.6794,"o":1193.62},{"d":"2022-03-11","n":9207.4966,"o":1194.29},{"d":"2022-03-14","n":9279.9926,"o":1199.03},{"d":"2022-03-15","n":9192.5144,"o":1180.15},{"d":"2022-03-16","n":9429.6234,"o":1213.54},{"d":"2022-03-17","n":9451.6876,"o":1226.58},{"d":"2022-03-18","n":9423.8091,"o":1228.54},{"d":"2022-03-21","n":9649.1855,"o":1258.6},{"d":"2022-03-22","n":9740.21,"o":1263.43},{"d":"2022-03-23","n":9710.0619,"o":1261.45},{"d":"2022-03-24","n":9675.2274,"o":1256.87},{"d":"2022-03-25","n":9741.1824,"o":1261.53},{"d":"2022-03-28","n":9778.0508,"o":1261.72},{"d":"2022-03-29","n":9702.3497,"o":1246.57},{"d":"2022-03-30","n":9839.7677,"o":1273.82},{"d":"2022-03-31","n":9697.2155,"o":1261.35},{"d":"2022-04-01","n":9822.5609,"o":1269.84},{"d":"2022-04-04","n":9782.386,"o":1264.57},{"d":"2022-04-05","n":9813.0467,"o":1266.0},{"d":"2022-04-06","n":9762.7757,"o":1259.26},{"d":"2022-04-07","n":9757.3965,"o":1254.66},{"d":"2022-04-08","n":9941.4302,"o":1276.62},{"d":"2022-04-11","n":9946.8562,"o":1263.63},{"d":"2022-04-12","n":9909.8685,"o":1265.1},{"d":"2022-04-13","n":9991.6752,"o":1283.13},{"d":"2022-04-14","n":9991.6752,"o":1283.13},{"d":"2022-04-15","n":9991.6752,"o":1283.13},{"d":"2022-04-18","n":9991.6752,"o":1283.13},{"d":"2022-04-19","n":10018.4036,"o":1279.07},{"d":"2022-04-20","n":10022.0924,"o":1280.83},{"d":"2022-04-21","n":10150.4521,"o":1285.21},{"d":"2022-04-22","n":10050.0354,"o":1263.88},{"d":"2022-04-25","n":9780.1869,"o":1226.11},{"d":"2022-04-26","n":9784.0595,"o":1226.68},{"d":"2022-04-27","n":9825.9985,"o":1239.41},{"d":"2022-04-28","n":9819.8595,"o":1234.47},{"d":"2022-04-29","n":9877.4135,"o":1239.82},{"d":"2022-05-02","n":9745.7747,"o":1218.36},{"d":"2022-05-03","n":9802.775,"o":1231.9},{"d":"2022-05-04","n":9835.1829,"o":1240.45},{"d":"2022-05-05","n":9773.1673,"o":1234.41},{"d":"2022-05-06","n":9621.0735,"o":1213.84},{"d":"2022-05-09","n":9468.8037,"o":1177.41},{"d":"2022-05-10","n":9483.3553,"o":1178.51},{"d":"2022-05-11","n":9555.9917,"o":1193.27},{"d":"2022-05-12","n":9437.7294,"o":1186.72},{"d":"2022-05-13","n":9546.7464,"o":1214.73},{"d":"2022-05-16","n":9632.8399,"o":1219.44},{"d":"2022-05-17","n":9632.8399,"o":1219.44},{"d":"2022-05-18","n":9703.7243,"o":1238.55},{"d":"2022-05-19","n":9605.9717,"o":1223.25},{"d":"2022-05-20","n":9686.7918,"o":1238.12},{"d":"2022-05-23","n":9780.4395,"o":1246.98},{"d":"2022-05-24","n":9783.5099,"o":1244.12},{"d":"2022-05-25","n":9828.3507,"o":1261.77},{"d":"2022-05-26","n":9828.3507,"o":1261.77},{"d":"2022-05-27","n":9859.7742,"o":1276.54},{"d":"2022-05-30","n":9828.6122,"o":1275.64},{"d":"2022-05-31","n":9882.5855,"o":1287.39},{"d":"2022-06-01","n":9861.3874,"o":1269.24},{"d":"2022-06-02","n":9880.7916,"o":1266.18},{"d":"2022-06-03","n":9889.1465,"o":1266.59},{"d":"2022-06-06","n":9889.1465,"o":1266.59},{"d":"2022-06-07","n":9881.3412,"o":1270.71},{"d":"2022-06-08","n":9804.7062,"o":1268.63},{"d":"2022-06-09","n":9765.6614,"o":1261.0},{"d":"2022-06-10","n":9554.8013,"o":1232.67},{"d":"2022-06-13","n":9282.5304,"o":1194.04},{"d":"2022-06-14","n":9337.9669,"o":1215.66},{"d":"2022-06-15","n":9398.3856,"o":1223.43},{"d":"2022-06-16","n":9167.9981,"o":1191.84},{"d":"2022-06-17","n":9207.8057,"o":1195.93},{"d":"2022-06-20","n":9267.255,"o":1214.53},{"d":"2022-06-21","n":9204.1479,"o":1198.82},{"d":"2022-06-22","n":9003.8439,"o":1163.57},{"d":"2022-06-23","n":8902.5323,"o":1154.27},{"d":"2022-06-24","n":8915.3401,"o":1161.22},{"d":"2022-06-27","n":9060.1338,"o":1182.1},{"d":"2022-06-28","n":9221.1141,"o":1207.57},{"d":"2022-06-29","n":9073.1769,"o":1197.48},{"d":"2022-06-30","n":8862.958,"o":1170.28},{"d":"2022-07-01","n":8790.6299,"o":1163.57},{"d":"2022-07-04","n":8966.605,"o":1195.17},{"d":"2022-07-05","n":8768.9128,"o":1168.55},{"d":"2022-07-06","n":8741.6236,"o":1159.55},{"d":"2022-07-07","n":8988.2651,"o":1195.33},{"d":"2022-07-08","n":8968.4946,"o":1186.44},{"d":"2022-07-11","n":8960.6245,"o":1193.39},{"d":"2022-07-12","n":9021.5035,"o":1192.06},{"d":"2022-07-13","n":8918.1254,"o":1178.74},{"d":"2022-07-14","n":8786.1937,"o":1151.23},{"d":"2022-07-15","n":8943.2631,"o":1159.96},{"d":"2022-07-18","n":9084.9668,"o":1193.88},{"d":"2022-07-19","n":9182.5842,"o":1196.75},{"d":"2022-07-20","n":9217.8446,"o":1206.45},{"d":"2022-07-21","n":9124.8406,"o":1185.12},{"d":"2022-07-22","n":9232.6717,"o":1204.0},{"d":"2022-07-25","n":9257.3842,"o":1202.36},{"d":"2022-07-26","n":9233.1747,"o":1210.13},{"d":"2022-07-27","n":9339.2631,"o":1217.13},{"d":"2022-07-28","n":9351.7158,"o":1224.52},{"d":"2022-07-29","n":9481.6669,"o":1253.18},{"d":"2022-08-01","n":9464.9242,"o":1241.55},{"d":"2022-08-02","n":9464.9242,"o":1248.45},{"d":"2022-08-03","n":9483.7504,"o":1247.43},{"d":"2022-08-04","n":9393.4173,"o":1241.18},{"d":"2022-08-05","n":9420.2855,"o":1245.18},{"d":"2022-08-08","n":9398.5281,"o":1243.8},{"d":"2022-08-09","n":9418.2204,"o":1255.04},{"d":"2022-08-10","n":9356.4417,"o":1248.47},{"d":"2022-08-11","n":9446.6104,"o":1266.59},{"d":"2022-08-12","n":9484.6415,"o":1261.75},{"d":"2022-08-15","n":9388.5862,"o":1250.34},{"d":"2022-08-16","n":9479.62,"o":1266.18},{"d":"2022-08-17","n":9372.0039,"o":1257.03},{"d":"2022-08-18","n":9476.6959,"o":1265.69},{"d":"2022-08-19","n":9493.2137,"o":1269.04},{"d":"2022-08-22","n":9370.1971,"o":1262.57},{"d":"2022-08-23","n":9488.6263,"o":1278.08},{"d":"2022-08-24","n":9465.5225,"o":1280.19},{"d":"2022-08-25","n":9465.9748,"o":1281.33},{"d":"2022-08-26","n":9373.6105,"o":1276.1},{"d":"2022-08-29","n":9293.4864,"o":1260.07},{"d":"2022-08-30","n":9245.1209,"o":1244.63},{"d":"2022-08-31","n":9261.913,"o":1248.67},{"d":"2022-09-01","n":9199.0965,"o":1234.61},{"d":"2022-09-02","n":9205.8178,"o":1237.67},{"d":"2022-09-05","n":9152.4182,"o":1247.7},{"d":"2022-09-06","n":8903.2569,"o":1206.85},{"d":"2022-09-07","n":8770.1987,"o":1179.27},{"d":"2022-09-08","n":8805.811,"o":1185.91},{"d":"2022-09-09","n":8993.1721,"o":1207.61},{"d":"2022-09-12","n":9115.2012,"o":1219.6},{"d":"2022-09-13","n":9103.6048,"o":1217.47},{"d":"2022-09-14","n":9019.9244,"o":1209.77},{"d":"2022-09-15","n":9054.4758,"o":1204.39},{"d":"2022-09-16","n":8884.2356,"o":1175.15},{"d":"2022-09-19","n":8860.2712,"o":1166.66},{"d":"2022-09-20","n":8755.5485,"o":1155.73},{"d":"2022-09-21","n":8790.0491,"o":1163.23},{"d":"2022-09-22","n":8736.5019,"o":1159.05},{"d":"2022-09-23","n":8487.7983,"o":1112.2},{"d":"2022-09-26","n":8429.0714,"o":1117.28},{"d":"2022-09-27","n":8426.3601,"o":1128.07},{"d":"2022-09-28","n":7965.8906,"o":1096.96},{"d":"2022-09-29","n":7823.0089,"o":1079.64},{"d":"2022-09-30","n":8000.9967,"o":1102.79},{"d":"2022-10-03","n":8157.0044,"o":1130.71},{"d":"2022-10-04","n":8210.2964,"o":1144.27},{"d":"2022-10-05","n":8124.262,"o":1135.54},{"d":"2022-10-06","n":8172.7304,"o":1134.04},{"d":"2022-10-07","n":8194.4485,"o":1136.43},{"d":"2022-10-10","n":8223.3254,"o":1134.89},{"d":"2022-10-11","n":8173.3482,"o":1117.46},{"d":"2022-10-12","n":8089.4198,"o":1107.24},{"d":"2022-10-13","n":8180.565,"o":1121.56},{"d":"2022-10-14","n":8131.4346,"o":1113.2},{"d":"2022-10-17","n":8239.5772,"o":1125.46},{"d":"2022-10-18","n":8363.378,"o":1135.78},{"d":"2022-10-19","n":8394.5429,"o":1133.61},{"d":"2022-10-20","n":8407.1014,"o":1141.4},{"d":"2022-10-21","n":8388.5884,"o":1131.55},{"d":"2022-10-24","n":8423.6835,"o":1134.4},{"d":"2022-10-25","n":8395.1648,"o":1139.47},{"d":"2022-10-26","n":8486.4312,"o":1152.22},{"d":"2022-10-27","n":8526.5239,"o":1165.06},{"d":"2022-10-28","n":8478.9611,"o":1164.49},{"d":"2022-10-31","n":8614.7332,"o":1175.45},{"d":"2022-11-01","n":8634.7708,"o":1190.61},{"d":"2022-11-02","n":8663.9075,"o":1185.42},{"d":"2022-11-03","n":8683.2989,"o":1188.42},{"d":"2022-11-04","n":8789.322,"o":1199.27},{"d":"2022-11-07","n":8826.4715,"o":1202.74},{"d":"2022-11-08","n":8870.8969,"o":1197.13},{"d":"2022-11-09","n":8810.2713,"o":1189.94},{"d":"2022-11-10","n":8817.7041,"o":1190.01},{"d":"2022-11-11","n":8851.4576,"o":1196.21},{"d":"2022-11-14","n":8837.4634,"o":1199.72},{"d":"2022-11-15","n":8868.0721,"o":1200.83},{"d":"2022-11-16","n":8835.2621,"o":1194.57},{"d":"2022-11-17","n":8813.2735,"o":1181.22},{"d":"2022-11-18","n":8790.9649,"o":1176.51},{"d":"2022-11-21","n":8728.8317,"o":1169.09},{"d":"2022-11-22","n":8843.1564,"o":1193.23},{"d":"2022-11-23","n":8857.8605,"o":1201.23},{"d":"2022-11-24","n":8929.6094,"o":1214.37},{"d":"2022-11-25","n":8972.618,"o":1215.51},{"d":"2022-11-28","n":8885.8425,"o":1200.96},{"d":"2022-11-29","n":8984.3011,"o":1217.37},{"d":"2022-11-30","n":8987.6772,"o":1220.76},{"d":"2022-12-01","n":9008.264,"o":1222.56},{"d":"2022-12-02","n":8958.6983,"o":1210.04},{"d":"2022-12-05","n":8967.5523,"o":1212.76},{"d":"2022-12-06","n":8933.3685,"o":1202.32},{"d":"2022-12-07","n":8817.5372,"o":1182.84},{"d":"2022-12-08","n":8829.5327,"o":1190.02},{"d":"2022-12-09","n":8911.1517,"o":1196.53},{"d":"2022-12-12","n":8926.0987,"o":1196.14},{"d":"2022-12-13","n":8974.0063,"o":1217.03},{"d":"2022-12-14","n":8889.9042,"o":1202.88},{"d":"2022-12-15","n":8867.7236,"o":1195.32},{"d":"2022-12-16","n":8855.4785,"o":1180.79},{"d":"2022-12-19","n":8855.9957,"o":1186.8},{"d":"2022-12-20","n":8937.7257,"o":1185.59},{"d":"2022-12-21","n":9110.9219,"o":1200.15},{"d":"2022-12-22","n":9134.2204,"o":1196.5},{"d":"2022-12-23","n":9155.7224,"o":1199.71},{"d":"2022-12-26","n":9155.7224,"o":1199.71},{"d":"2022-12-27","n":9180.1978,"o":1199.95},{"d":"2022-12-28","n":9139.8056,"o":1190.8},{"d":"2022-12-29","n":9187.0786,"o":1197.77},{"d":"2022-12-30","n":9186.54,"o":1189.0},{"d":"2023-01-02","n":9161.4279,"o":1197.1},{"d":"2023-01-03","n":9108.8921,"o":1182.96},{"d":"2023-01-04","n":9042.1097,"o":1165.22},{"d":"2023-01-05","n":9086.5927,"o":1173.78},{"d":"2023-01-06","n":9167.1284,"o":1185.82},{"d":"2023-01-09","n":9236.2232,"o":1194.15},{"d":"2023-01-10","n":9172.7742,"o":1184.78},{"d":"2023-01-11","n":9149.0348,"o":1182.96},{"d":"2023-01-12","n":9238.7007,"o":1194.4},{"d":"2023-01-13","n":9321.4402,"o":1192.51},{"d":"2023-01-16","n":9303.8299,"o":1186.62},{"d":"2023-01-17","n":9333.7125,"o":1196.14},{"d":"2023-01-18","n":9371.1955,"o":1200.01},{"d":"2023-01-19","n":9292.4837,"o":1182.66},{"d":"2023-01-20","n":9327.7394,"o":1189.32},{"d":"2023-01-23","n":9359.5135,"o":1198.7},{"d":"2023-01-24","n":9347.3812,"o":1191.89},{"d":"2023-01-25","n":9316.0052,"o":1180.51},{"d":"2023-01-26","n":9336.447,"o":1182.66},{"d":"2023-01-27","n":9434.1503,"o":1199.16},{"d":"2023-01-30","n":9444.0459,"o":1195.09},{"d":"2023-01-31","n":9469.1594,"o":1195.44},{"d":"2023-02-01","n":9546.3587,"o":1206.83},{"d":"2023-02-02","n":9462.7113,"o":1199.32},{"d":"2023-02-03","n":9509.1634,"o":1211.35},{"d":"2023-02-06","n":9465.183,"o":1202.75},{"d":"2023-02-07","n":9591.6997,"o":1209.57},{"d":"2023-02-08","n":9845.6556,"o":1239.75},{"d":"2023-02-09","n":9793.5512,"o":1236.66},{"d":"2023-02-10","n":9761.0795,"o":1238.25},{"d":"2023-02-13","n":9787.2273,"o":1236.7},{"d":"2023-02-14","n":9809.8622,"o":1236.83},{"d":"2023-02-15","n":9863.5019,"o":1234.8},{"d":"2023-02-16","n":9844.4997,"o":1240.4},{"d":"2023-02-17","n":9808.4544,"o":1229.49},{"d":"2023-02-20","n":9854.9815,"o":1234.68},{"d":"2023-02-21","n":9763.4321,"o":1227.02},{"d":"2023-02-22","n":9697.0187,"o":1219.74},{"d":"2023-02-23","n":9757.8235,"o":1235.65},{"d":"2023-02-24","n":9754.936,"o":1226.65},{"d":"2023-02-27","n":9857.6937,"o":1237.19},{"d":"2023-02-28","n":9930.6474,"o":1240.92},{"d":"2023-03-01","n":9958.8568,"o":1242.54},{"d":"2023-03-02","n":10001.9666,"o":1250.4},{"d":"2023-03-03","n":10022.4426,"o":1255.92},{"d":"2023-03-06","n":9980.4052,"o":1255.39},{"d":"2023-03-07","n":9901.7228,"o":1245.34},{"d":"2023-03-08","n":9912.389,"o":1243.59},{"d":"2023-03-09","n":9839.5356,"o":1233.56},{"d":"2023-03-10","n":9752.9497,"o":1220.58},{"d":"2023-03-13","n":9446.873,"o":1188.94},{"d":"2023-03-14","n":9560.8778,"o":1205.33},{"d":"2023-03-15","n":9233.341,"o":1160.25},{"d":"2023-03-16","n":9209.7952,"o":1160.0},{"d":"2023-03-17","n":9130.3772,"o":1153.0},{"d":"2023-03-20","n":9233.9344,"o":1165.34},{"d":"2023-03-21","n":9319.9587,"o":1176.5},{"d":"2023-03-22","n":9311.4293,"o":1178.18},{"d":"2023-03-23","n":9276.3894,"o":1176.41},{"d":"2023-03-24","n":9026.5825,"o":1141.95},{"d":"2023-03-27","n":9164.7418,"o":1158.81},{"d":"2023-03-28","n":9190.745,"o":1159.63},{"d":"2023-03-29","n":9288.5369,"o":1168.59},{"d":"2023-03-30","n":9453.0678,"o":1184.66},{"d":"2023-03-31","n":9546.6873,"o":1193.57},{"d":"2023-04-03","n":9600.3953,"o":1208.6},{"d":"2023-04-04","n":9559.9533,"o":1201.41},{"d":"2023-04-05","n":9498.7179,"o":1195.23},{"d":"2023-04-06","n":9498.7179,"o":1195.23},{"d":"2023-04-07","n":9498.7179,"o":1195.23},{"d":"2023-04-10","n":9498.7179,"o":1195.23},{"d":"2023-04-11","n":9649.1842,"o":1209.83},{"d":"2023-04-12","n":9683.7298,"o":1215.64},{"d":"2023-04-13","n":9670.8237,"o":1216.15},{"d":"2023-04-14","n":9728.8459,"o":1224.58},{"d":"2023-04-17","n":9737.0722,"o":1227.25},{"d":"2023-04-18","n":9763.3007,"o":1228.08},{"d":"2023-04-19","n":9744.2014,"o":1220.72},{"d":"2023-04-20","n":9734.8102,"o":1214.6},{"d":"2023-04-21","n":9753.6822,"o":1210.24},{"d":"2023-04-24","n":9786.3574,"o":1219.8},{"d":"2023-04-25","n":9731.5699,"o":1204.62},{"d":"2023-04-26","n":9738.6222,"o":1204.81},{"d":"2023-04-27","n":9818.0892,"o":1213.16},{"d":"2023-04-28","n":9865.8221,"o":1226.44},{"d":"2023-05-01","n":9865.8221,"o":1226.44},{"d":"2023-05-02","n":9793.8919,"o":1208.41},{"d":"2023-05-03","n":9721.3797,"o":1203.48},{"d":"2023-05-04","n":9576.2156,"o":1189.72},{"d":"2023-05-05","n":9591.6115,"o":1204.54},{"d":"2023-05-08","n":9674.0136,"o":1213.09},{"d":"2023-05-09","n":9602.0369,"o":1202.34},{"d":"2023-05-10","n":9654.6396,"o":1204.02},{"d":"2023-05-11","n":9659.8772,"o":1201.49},{"d":"2023-05-12","n":9692.7062,"o":1213.11},{"d":"2023-05-15","n":9679.3733,"o":1216.65},{"d":"2023-05-16","n":9631.0196,"o":1210.96},{"d":"2023-05-17","n":9631.0196,"o":1210.96},{"d":"2023-05-18","n":9631.0196,"o":1210.96},{"d":"2023-05-19","n":9716.0681,"o":1225.4},{"d":"2023-05-22","n":9648.2584,"o":1220.66},{"d":"2023-05-23","n":9665.304,"o":1227.39},{"d":"2023-05-24","n":9639.1803,"o":1221.23},{"d":"2023-05-25","n":9638.7094,"o":1219.16},{"d":"2023-05-26","n":9584.4034,"o":1215.57},{"d":"2023-05-29","n":9584.4034,"o":1215.57},{"d":"2023-05-30","n":9557.7762,"o":1209.81},{"d":"2023-05-31","n":9446.0059,"o":1198.54},{"d":"2023-06-01","n":9409.7233,"o":1202.0},{"d":"2023-06-02","n":9588.3129,"o":1226.27},{"d":"2023-06-05","n":9558.5738,"o":1227.29},{"d":"2023-06-06","n":9458.7371,"o":1213.72},{"d":"2023-06-07","n":9529.5337,"o":1227.6},{"d":"2023-06-08","n":9560.7657,"o":1227.77},{"d":"2023-06-09","n":9561.1055,"o":1231.56},{"d":"2023-06-12","n":9517.8354,"o":1225.87},{"d":"2023-06-13","n":9616.1255,"o":1245.08},{"d":"2023-06-14","n":9585.3591,"o":1238.09},{"d":"2023-06-15","n":9516.347,"o":1235.36},{"d":"2023-06-16","n":9565.2425,"o":1246.02},{"d":"2023-06-19","n":9486.6486,"o":1231.97},{"d":"2023-06-20","n":9474.6682,"o":1234.07},{"d":"2023-06-21","n":9457.3801,"o":1227.58},{"d":"2023-06-22","n":9406.1665,"o":1208.1},{"d":"2023-06-23","n":9342.4943,"o":1193.99},{"d":"2023-06-26","n":9370.857,"o":1195.7},{"d":"2023-06-27","n":9320.3693,"o":1186.15},{"d":"2023-06-28","n":9422.1427,"o":1198.67},{"d":"2023-06-29","n":9504.367,"o":1210.13},{"d":"2023-06-30","n":9565.9576,"o":1214.12},{"d":"2023-07-03","n":9648.8751,"o":1225.17},{"d":"2023-07-04","n":9637.73,"o":1227.34},{"d":"2023-07-05","n":9589.6861,"o":1216.96},{"d":"2023-07-06","n":9478.063,"o":1198.34},{"d":"2023-07-07","n":9540.5649,"o":1198.96},{"d":"2023-07-10","n":9500.6706,"o":1201.66},{"d":"2023-07-11","n":9488.0749,"o":1205.68},{"d":"2023-07-12","n":9562.3144,"o":1216.21},{"d":"2023-07-13","n":9535.9227,"o":1213.54},{"d":"2023-07-14","n":9412.1074,"o":1201.04},{"d":"2023-07-17","n":9287.2536,"o":1186.39},{"d":"2023-07-18","n":9378.2288,"o":1201.88},{"d":"2023-07-19","n":9397.3339,"o":1209.86},{"d":"2023-07-20","n":9476.7085,"o":1223.29},{"d":"2023-07-21","n":9528.2797,"o":1230.79},{"d":"2023-07-24","n":9530.0225,"o":1237.18},{"d":"2023-07-25","n":9595.0858,"o":1242.7},{"d":"2023-07-26","n":9538.8959,"o":1231.07},{"d":"2023-07-27","n":9593.4794,"o":1239.81},{"d":"2023-07-28","n":9545.1765,"o":1234.57},{"d":"2023-07-31","n":9622.3863,"o":1244.93},{"d":"2023-08-01","n":9676.4218,"o":1245.5},{"d":"2023-08-02","n":9562.1968,"o":1231.51},{"d":"2023-08-03","n":9565.0557,"o":1232.5},{"d":"2023-08-04","n":9637.4838,"o":1242.7},{"d":"2023-08-07","n":9597.574,"o":1234.03},{"d":"2023-08-08","n":9480.2359,"o":1226.28},{"d":"2023-08-09","n":9643.4131,"o":1256.06},{"d":"2023-08-10","n":9617.3728,"o":1255.55},{"d":"2023-08-11","n":9650.3185,"o":1260.92},{"d":"2023-08-14","n":9657.3451,"o":1257.26},{"d":"2023-08-15","n":9623.0193,"o":1252.67},{"d":"2023-08-16","n":9734.3469,"o":1257.11},{"d":"2023-08-17","n":9700.1625,"o":1254.93},{"d":"2023-08-18","n":9573.1352,"o":1237.48},{"d":"2023-08-21","n":9558.3725,"o":1242.16},{"d":"2023-08-22","n":9492.5982,"o":1236.99},{"d":"2023-08-23","n":9448.9405,"o":1229.09},{"d":"2023-08-24","n":9464.5462,"o":1228.37},{"d":"2023-08-25","n":9505.3732,"o":1231.94},{"d":"2023-08-28","n":9599.207,"o":1246.85},{"d":"2023-08-29","n":9608.6458,"o":1247.21},{"d":"2023-08-30","n":9612.6638,"o":1252.12},{"d":"2023-08-31","n":9662.3434,"o":1255.6},{"d":"2023-09-01","n":9696.7129,"o":1265.81},{"d":"2023-09-04","n":9748.0648,"o":1266.79},{"d":"2023-09-05","n":9781.5595,"o":1272.72},{"d":"2023-09-06","n":9722.6549,"o":1269.78},{"d":"2023-09-07","n":9683.859,"o":1262.2},{"d":"2023-09-08","n":9708.1012,"o":1266.34},{"d":"2023-09-11","n":9797.412,"o":1273.99},{"d":"2023-09-12","n":9810.1564,"o":1275.79},{"d":"2023-09-13","n":9768.6898,"o":1273.47},{"d":"2023-09-14","n":9908.4119,"o":1297.2},{"d":"2023-09-15","n":9926.2804,"o":1300.98},{"d":"2023-09-18","n":10004.884,"o":1300.03},{"d":"2023-09-19","n":9995.2206,"o":1301.38},{"d":"2023-09-20","n":10046.4019,"o":1306.18},{"d":"2023-09-21","n":9967.8825,"o":1296.0},{"d":"2023-09-22","n":9943.0502,"o":1299.66},{"d":"2023-09-25","n":9830.5421,"o":1283.59},{"d":"2023-09-26","n":9818.582,"o":1278.97},{"d":"2023-09-27","n":9880.0316,"o":1294.01},{"d":"2023-09-28","n":9852.3411,"o":1289.1},{"d":"2023-09-29","n":9871.386,"o":1290.99},{"d":"2023-10-02","n":9840.8526,"o":1281.21},{"d":"2023-10-03","n":9699.6631,"o":1263.05},{"d":"2023-10-04","n":9601.6076,"o":1247.68},{"d":"2023-10-05","n":9683.8288,"o":1253.05},{"d":"2023-10-06","n":9653.9423,"o":1251.27},{"d":"2023-10-09","n":9770.0519,"o":1280.13},{"d":"2023-10-10","n":9855.6041,"o":1295.77},{"d":"2023-10-11","n":9859.0661,"o":1293.2},{"d":"2023-10-12","n":9936.9147,"o":1308.55},{"d":"2023-10-13","n":9923.6256,"o":1310.84},{"d":"2023-10-16","n":9894.619,"o":1312.0},{"d":"2023-10-17","n":9888.0492,"o":1309.81},{"d":"2023-10-18","n":9903.506,"o":1312.26},{"d":"2023-10-19","n":9791.6848,"o":1291.25},{"d":"2023-10-20","n":9648.1849,"o":1272.14},{"d":"2023-10-23","n":9542.3267,"o":1254.72},{"d":"2023-10-24","n":9655.3472,"o":1264.85},{"d":"2023-10-25","n":9630.5384,"o":1259.14},{"d":"2023-10-26","n":9582.4961,"o":1252.38},{"d":"2023-10-27","n":9677.9745,"o":1263.81},{"d":"2023-10-30","n":9733.5501,"o":1268.48},{"d":"2023-10-31","n":9850.759,"o":1281.02},{"d":"2023-11-01","n":9862.2028,"o":1281.17},{"d":"2023-11-02","n":9904.9381,"o":1291.81},{"d":"2023-11-03","n":9906.7103,"o":1284.91},{"d":"2023-11-06","n":9919.3617,"o":1291.24},{"d":"2023-11-07","n":9746.1257,"o":1264.53},{"d":"2023-11-08","n":9824.9324,"o":1273.74},{"d":"2023-11-09","n":9966.0447,"o":1288.59},{"d":"2023-11-10","n":9904.011,"o":1283.07},{"d":"2023-11-13","n":9928.7622,"o":1293.99},{"d":"2023-11-14","n":10015.4704,"o":1303.08},{"d":"2023-11-15","n":9919.8574,"o":1306.4},{"d":"2023-11-16","n":9742.3286,"o":1282.8},{"d":"2023-11-17","n":9864.0518,"o":1296.28},{"d":"2023-11-20","n":9912.1172,"o":1306.38},{"d":"2023-11-21","n":9809.2659,"o":1288.74},{"d":"2023-11-22","n":9769.5462,"o":1286.3},{"d":"2023-11-23","n":9888.3819,"o":1306.34},{"d":"2023-11-24","n":9948.183,"o":1315.22},{"d":"2023-11-27","n":9933.9555,"o":1311.21},{"d":"2023-11-28","n":9872.9466,"o":1299.85},{"d":"2023-11-29","n":9869.1399,"o":1293.15},{"d":"2023-11-30","n":9916.8352,"o":1303.88},{"d":"2023-12-01","n":9933.5211,"o":1304.37},{"d":"2023-12-04","n":9855.1417,"o":1290.24},{"d":"2023-12-05","n":9868.2636,"o":1292.16},{"d":"2023-12-06","n":9846.2245,"o":1291.25},{"d":"2023-12-07","n":9784.2646,"o":1287.64},{"d":"2023-12-08","n":9855.1489,"o":1294.33},{"d":"2023-12-11","n":9831.6349,"o":1299.18},{"d":"2023-12-12","n":9799.7637,"o":1291.39},{"d":"2023-12-13","n":9767.3842,"o":1289.59},{"d":"2023-12-14","n":9895.5524,"o":1303.97},{"d":"2023-12-15","n":9838.4636,"o":1296.42},{"d":"2023-12-18","n":9982.6888,"o":1309.03},{"d":"2023-12-19","n":9958.5243,"o":1299.63},{"d":"2023-12-20","n":9949.1679,"o":1297.01},{"d":"2023-12-21","n":9920.9192,"o":1292.59},{"d":"2023-12-22","n":9945.3547,"o":1295.42},{"d":"2023-12-25","n":9945.3547,"o":1295.42},{"d":"2023-12-26","n":9945.3547,"o":1295.42},{"d":"2023-12-27","n":10026.88,"o":1307.1},{"d":"2023-12-28","n":10077.4394,"o":1304.4},{"d":"2023-12-29","n":10119.1652,"o":1306.61},{"d":"2024-01-01","n":10119.1652,"o":1306.61},{"d":"2024-01-02","n":10068.5173,"o":1307.06},{"d":"2024-01-03","n":10064.6177,"o":1307.12},{"d":"2024-01-04","n":10183.3461,"o":1323.13},{"d":"2024-01-05","n":10154.187,"o":1317.77},{"d":"2024-01-08","n":10152.1703,"o":1303.96},{"d":"2024-01-09","n":10128.0615,"o":1302.91},{"d":"2024-01-10","n":10121.9033,"o":1297.17},{"d":"2024-01-11","n":10093.1588,"o":1289.74},{"d":"2024-01-12","n":10132.7344,"o":1298.75},{"d":"2024-01-15","n":10059.8237,"o":1286.13},{"d":"2024-01-16","n":10060.7036,"o":1284.38},{"d":"2024-01-17","n":10009.6104,"o":1271.16},{"d":"2024-01-18","n":10050.3804,"o":1276.39},{"d":"2024-01-19","n":10033.0665,"o":1278.01},{"d":"2024-01-22","n":10056.0024,"o":1278.24},{"d":"2024-01-23","n":10079.1998,"o":1284.39},{"d":"2024-01-24","n":10120.0737,"o":1285.95},{"d":"2024-01-25","n":10066.5077,"o":1285.16},{"d":"2024-01-26","n":10116.3608,"o":1293.52},{"d":"2024-01-29","n":10076.7888,"o":1289.58},{"d":"2024-01-30","n":10021.8768,"o":1282.75},{"d":"2024-01-31","n":10056.8128,"o":1278.32},{"d":"2024-02-01","n":10080.7443,"o":1279.3},{"d":"2024-02-02","n":10073.354,"o":1271.69},{"d":"2024-02-05","n":10006.9485,"o":1264.09},{"d":"2024-02-06","n":10108.4854,"o":1273.21},{"d":"2024-02-07","n":9946.2034,"o":1247.17},{"d":"2024-02-08","n":9906.7829,"o":1236.59},{"d":"2024-02-09","n":9880.3609,"o":1240.49},{"d":"2024-02-12","n":9967.1324,"o":1250.87},{"d":"2024-02-13","n":9902.6244,"o":1240.19},{"d":"2024-02-14","n":9922.425,"o":1250.4},{"d":"2024-02-15","n":9923.7998,"o":1252.24},{"d":"2024-02-16","n":10034.0936,"o":1264.02},{"d":"2024-02-19","n":9985.4079,"o":1267.23},{"d":"2024-02-20","n":9921.5625,"o":1262.81},{"d":"2024-02-21","n":9913.661,"o":1260.0},{"d":"2024-02-22","n":9961.1132,"o":1263.58},{"d":"2024-02-23","n":9992.1193,"o":1260.8},{"d":"2024-02-26","n":9964.9908,"o":1262.31},{"d":"2024-02-27","n":9932.5303,"o":1260.06},{"d":"2024-02-28","n":10061.7328,"o":1263.82},{"d":"2024-02-29","n":10145.8525,"o":1266.11},{"d":"2024-03-01","n":10230.9343,"o":1275.14},{"d":"2024-03-04","n":10184.9724,"o":1268.96},{"d":"2024-03-05","n":10178.6401,"o":1275.27},{"d":"2024-03-06","n":10152.8155,"o":1274.04},{"d":"2024-03-07","n":10164.9068,"o":1274.52},{"d":"2024-03-08","n":10225.3263,"o":1279.23},{"d":"2024-03-11","n":10151.9427,"o":1267.61},{"d":"2024-03-12","n":10254.6512,"o":1279.21},{"d":"2024-03-13","n":10324.3064,"o":1291.47},{"d":"2024-03-14","n":10286.7477,"o":1290.84},{"d":"2024-03-15","n":10384.9418,"o":1293.09},{"d":"2024-03-18","n":10407.791,"o":1300.45},{"d":"2024-03-19","n":10425.5199,"o":1302.94},{"d":"2024-03-20","n":10426.6308,"o":1303.74},{"d":"2024-03-21","n":10470.353,"o":1310.55},{"d":"2024-03-22","n":10539.2306,"o":1319.33},{"d":"2024-03-25","n":10526.5245,"o":1323.06},{"d":"2024-03-26","n":10568.5716,"o":1322.36},{"d":"2024-03-27","n":10603.5472,"o":1328.15},{"d":"2024-03-28","n":10603.5472,"o":1328.15},{"d":"2024-03-29","n":10603.5472,"o":1328.15},{"d":"2024-04-01","n":10603.5472,"o":1328.15},{"d":"2024-04-02","n":10674.4636,"o":1342.78},{"d":"2024-04-03","n":10706.4843,"o":1349.28},{"d":"2024-04-04","n":10766.3892,"o":1349.62},{"d":"2024-04-05","n":10790.3155,"o":1351.5},{"d":"2024-04-08","n":10792.3996,"o":1350.9},{"d":"2024-04-09","n":10828.89,"o":1352.65},{"d":"2024-04-10","n":10859.6993,"o":1357.06},{"d":"2024-04-11","n":10814.5692,"o":1355.28},{"d":"2024-04-12","n":10945.006,"o":1376.17},{"d":"2024-04-15","n":10864.3853,"o":1361.91},{"d":"2024-04-16","n":10767.1615,"o":1343.16},{"d":"2024-04-17","n":10787.0774,"o":1347.78},{"d":"2024-04-18","n":10763.5997,"o":1342.62},{"d":"2024-04-19","n":10766.8841,"o":1341.22},{"d":"2024-04-22","n":10801.2102,"o":1340.25},{"d":"2024-04-23","n":10802.0157,"o":1339.8},{"d":"2024-04-24","n":10904.7367,"o":1353.28},{"d":"2024-04-25","n":10950.9597,"o":1358.86},{"d":"2024-04-26","n":10990.645,"o":1365.93},{"d":"2024-04-29","n":11008.5083,"o":1367.92},{"d":"2024-04-30","n":11046.0198,"o":1371.21},{"d":"2024-05-01","n":11046.0198,"o":1371.21},{"d":"2024-05-02","n":10959.6546,"o":1364.5},{"d":"2024-05-03","n":10957.5332,"o":1371.3},{"d":"2024-05-06","n":11064.6085,"o":1390.11},{"d":"2024-05-07","n":11119.6807,"o":1394.15},{"d":"2024-05-08","n":11218.0624,"o":1398.27},{"d":"2024-05-09","n":11218.0624,"o":1398.27},{"d":"2024-05-10","n":11344.7473,"o":1418.73},{"d":"2024-05-13","n":11356.1851,"o":1416.45},{"d":"2024-05-14","n":11308.0947,"o":1417.0},{"d":"2024-05-15","n":11295.3704,"o":1409.06},{"d":"2024-05-16","n":11340.4201,"o":1416.42},{"d":"2024-05-17","n":11340.4201,"o":1416.42},{"d":"2024-05-20","n":11340.4201,"o":1416.42},{"d":"2024-05-21","n":11340.0482,"o":1424.56},{"d":"2024-05-22","n":11269.3623,"o":1418.31},{"d":"2024-05-23","n":11305.7817,"o":1424.98},{"d":"2024-05-24","n":11336.1118,"o":1423.46},{"d":"2024-05-27","n":11407.3429,"o":1434.2},{"d":"2024-05-28","n":11378.1269,"o":1433.82},{"d":"2024-05-29","n":11298.2186,"o":1423.64},{"d":"2024-05-30","n":11372.4674,"o":1428.1},{"d":"2024-05-31","n":11423.7337,"o":1440.53},{"d":"2024-06-03","n":11402.7556,"o":1442.35},{"d":"2024-06-04","n":11194.086,"o":1415.1},{"d":"2024-06-05","n":11154.3107,"o":1413.36},{"d":"2024-06-06","n":11189.1509,"o":1416.83},{"d":"2024-06-07","n":11184.6541,"o":1423.28},{"d":"2024-06-10","n":11144.3388,"o":1419.29},{"d":"2024-06-11","n":11035.7336,"o":1407.23},{"d":"2024-06-12","n":11116.6063,"o":1414.25},{"d":"2024-06-13","n":11014.9025,"o":1400.14},{"d":"2024-06-14","n":10978.0543,"o":1391.56},{"d":"2024-06-17","n":11055.3654,"o":1393.52},{"d":"2024-06-18","n":11099.1475,"o":1403.06},{"d":"2024-06-19","n":11071.8024,"o":1404.23},{"d":"2024-06-20","n":11090.0821,"o":1409.34},{"d":"2024-06-21","n":11099.4344,"o":1406.98},{"d":"2024-06-24","n":11175.3085,"o":1417.06},{"d":"2024-06-25","n":11132.0029,"o":1410.46},{"d":"2024-06-26","n":11091.1472,"o":1409.24},{"d":"2024-06-27","n":11141.0818,"o":1415.84},{"d":"2024-06-28","n":11188.6782,"o":1422.35},{"d":"2024-07-01","n":11193.106,"o":1428.29},{"d":"2024-07-02","n":11237.0218,"o":1427.64},{"d":"2024-07-03","n":11221.0882,"o":1428.23},{"d":"2024-07-04","n":11225.238,"o":1425.84},{"d":"2024-07-05","n":11192.9144,"o":1418.82},{"d":"2024-07-08","n":11149.4403,"o":1409.3},{"d":"2024-07-09","n":11062.6971,"o":1401.33},{"d":"2024-07-10","n":11061.6551,"o":1406.03},{"d":"2024-07-11","n":11054.8829,"o":1415.32},{"d":"2024-07-12","n":11192.878,"o":1434.43},{"d":"2024-07-15","n":11200.3653,"o":1427.41},{"d":"2024-07-16","n":11181.7058,"o":1425.29},{"d":"2024-07-17","n":11255.451,"o":1431.74},{"d":"2024-07-18","n":11341.6051,"o":1443.71},{"d":"2024-07-19","n":11392.3493,"o":1443.02},{"d":"2024-07-22","n":11423.9908,"o":1452.54},{"d":"2024-07-23","n":11391.5977,"o":1446.85},{"d":"2024-07-24","n":11378.7288,"o":1440.21},{"d":"2024-07-25","n":11336.176,"o":1429.04},{"d":"2024-07-26","n":11372.7156,"o":1434.12},{"d":"2024-07-29","n":11433.3426,"o":1445.27},{"d":"2024-07-30","n":11425.9472,"o":1443.96},{"d":"2024-07-31","n":11511.818,"o":1459.29},{"d":"2024-08-01","n":11468.2516,"o":1451.57},{"d":"2024-08-02","n":11197.2003,"o":1408.88},{"d":"2024-08-05","n":10822.5238,"o":1361.58},{"d":"2024-08-06","n":10919.9391,"o":1374.22},{"d":"2024-08-07","n":11112.2932,"o":1401.05},{"d":"2024-08-08","n":11128.801,"o":1402.52},{"d":"2024-08-09","n":11166.0501,"o":1412.91},{"d":"2024-08-12","n":11258.4097,"o":1427.52},{"d":"2024-08-13","n":11301.3104,"o":1427.65},{"d":"2024-08-14","n":11355.2611,"o":1437.29},{"d":"2024-08-15","n":11397.5379,"o":1438.37},{"d":"2024-08-16","n":11399.1767,"o":1442.82},{"d":"2024-08-19","n":11448.3898,"o":1448.6},{"d":"2024-08-20","n":11280.5668,"o":1428.69},{"d":"2024-08-21","n":11349.6229,"o":1425.94},{"d":"2024-08-22","n":11363.8185,"o":1424.87},{"d":"2024-08-23","n":11423.5769,"o":1434.48},{"d":"2024-08-26","n":11502.407,"o":1443.61},{"d":"2024-08-27","n":11471.1802,"o":1438.26},{"d":"2024-08-28","n":11406.1976,"o":1431.22},{"d":"2024-08-29","n":11379.6087,"o":1432.52},{"d":"2024-08-30","n":11431.8953,"o":1439.44},{"d":"2024-09-02","n":11332.8735,"o":1428.96},{"d":"2024-09-03","n":11095.3241,"o":1397.48},{"d":"2024-09-04","n":11113.9931,"o":1397.16},{"d":"2024-09-05","n":11098.4575,"o":1393.79},{"d":"2024-09-06","n":11041.0947,"o":1385.94},{"d":"2024-09-09","n":11100.4824,"o":1392.67},{"d":"2024-09-10","n":10979.5722,"o":1379.27},{"d":"2024-09-11","n":11027.9526,"o":1381.37},{"d":"2024-09-12","n":11075.2489,"o":1394.8},{"d":"2024-09-13","n":11198.6181,"o":1407.41},{"d":"2024-09-16","n":11215.3259,"o":1410.9},{"d":"2024-09-17","n":11228.5123,"o":1404.8},{"d":"2024-09-18","n":11201.2055,"o":1400.41},{"d":"2024-09-19","n":11264.6934,"o":1411.02},{"d":"2024-09-20","n":11243.9685,"o":1407.43},{"d":"2024-09-23","n":11264.2965,"o":1412.29},{"d":"2024-09-24","n":11250.3286,"o":1412.36},{"d":"2024-09-25","n":11192.4112,"o":1404.42},{"d":"2024-09-26","n":11166.4489,"o":1393.83},{"d":"2024-09-27","n":11254.3289,"o":1406.93},{"d":"2024-09-30","n":11333.4319,"o":1416.3},{"d":"2024-10-01","n":11377.9485,"o":1424.67},{"d":"2024-10-02","n":11400.1958,"o":1437.67},{"d":"2024-10-03","n":11417.3098,"o":1436.15},{"d":"2024-10-04","n":11550.248,"o":1449.45},{"d":"2024-10-07","n":11508.4565,"o":1442.48},{"d":"2024-10-08","n":11381.376,"o":1424.05},{"d":"2024-10-09","n":11497.6459,"o":1431.66},{"d":"2024-10-10","n":11618.1781,"o":1443.63},{"d":"2024-10-11","n":11661.6483,"o":1449.34},{"d":"2024-10-14","n":11612.3948,"o":1450.21},{"d":"2024-10-15","n":11555.5897,"o":1438.27},{"d":"2024-10-16","n":11569.5083,"o":1441.83},{"d":"2024-10-17","n":11601.8819,"o":1443.94},{"d":"2024-10-18","n":11532.4841,"o":1433.62},{"d":"2024-10-21","n":11604.5641,"o":1438.55},{"d":"2024-10-22","n":11594.0619,"o":1444.02},{"d":"2024-10-23","n":11597.3682,"o":1439.93},{"d":"2024-10-24","n":11638.727,"o":1446.48},{"d":"2024-10-25","n":11714.4095,"o":1461.21},{"d":"2024-10-28","n":11679.3806,"o":1449.88},{"d":"2024-10-29","n":11628.9744,"o":1449.39},{"d":"2024-10-30","n":11579.1897,"o":1449.57},{"d":"2024-10-31","n":11424.9094,"o":1431.41},{"d":"2024-11-01","n":11399.1663,"o":1433.2},{"d":"2024-11-04","n":11353.5433,"o":1426.69},{"d":"2024-11-05","n":11394.3636,"o":1432.66},{"d":"2024-11-06","n":11327.5027,"o":1414.43},{"d":"2024-11-07","n":11398.8038,"o":1421.23},{"d":"2024-11-08","n":11356.8314,"o":1416.42},{"d":"2024-11-11","n":11395.8044,"o":1419.61},{"d":"2024-11-12","n":11294.8163,"o":1411.19},{"d":"2024-11-13","n":11185.1431,"o":1402.42},{"d":"2024-11-14","n":11278.2104,"o":1426.26},{"d":"2024-11-15","n":11419.4799,"o":1445.01},{"d":"2024-11-18","n":11402.369,"o":1441.81},{"d":"2024-11-19","n":11329.4071,"o":1442.97},{"d":"2024-11-20","n":11460.5905,"o":1452.15},{"d":"2024-11-21","n":11515.0167,"o":1464.83},{"d":"2024-11-22","n":11594.4043,"o":1468.66},{"d":"2024-11-25","n":11630.8822,"o":1471.7},{"d":"2024-11-26","n":11443.1689,"o":1452.05},{"d":"2024-11-27","n":11480.5968,"o":1457.03},{"d":"2024-11-28","n":11497.3541,"o":1456.97},{"d":"2024-11-29","n":11458.7904,"o":1454.21},{"d":"2024-12-02","n":11452.8977,"o":1454.77},{"d":"2024-12-03","n":11552.2754,"o":1469.43},{"d":"2024-12-04","n":11623.5888,"o":1472.91},{"d":"2024-12-05","n":11661.1109,"o":1472.08},{"d":"2024-12-06","n":11538.3857,"o":1449.58},{"d":"2024-12-09","n":11606.3835,"o":1454.92},{"d":"2024-12-10","n":11511.7456,"o":1447.17},{"d":"2024-12-11","n":11538.4308,"o":1447.7},{"d":"2024-12-12","n":11581.6213,"o":1448.52},{"d":"2024-12-13","n":11606.5459,"o":1445.87},{"d":"2024-12-16","n":11490.1205,"o":1429.9},{"d":"2024-12-17","n":11346.0616,"o":1417.55},{"d":"2024-12-18","n":11314.5842,"o":1414.24},{"d":"2024-12-19","n":11269.0825,"o":1406.06},{"d":"2024-12-20","n":11245.655,"o":1400.54},{"d":"2024-12-23","n":11310.1784,"o":1408.0},{"d":"2024-12-24","n":11310.1784,"o":1408.0},{"d":"2024-12-25","n":11310.1784,"o":1408.0},{"d":"2024-12-26","n":11310.1784,"o":1408.0},{"d":"2024-12-27","n":11424.7531,"o":1425.1},{"d":"2024-12-30","n":11468.6735,"o":1425.05},{"d":"2024-12-31","n":11468.5826,"o":1425.05},{"d":"2025-01-01","n":11468.5826,"o":1425.05},{"d":"2025-01-02","n":11606.7646,"o":1458.15},{"d":"2025-01-03","n":11621.7917,"o":1462.48},{"d":"2025-01-06","n":11597.2412,"o":1461.23},{"d":"2025-01-07","n":11605.2052,"o":1469.54},{"d":"2025-01-08","n":11613.3509,"o":1466.56},{"d":"2025-01-09","n":11765.6905,"o":1472.83},{"d":"2025-01-10","n":11780.7963,"o":1479.81},{"d":"2025-01-13","n":11767.0061,"o":1479.15},{"d":"2025-01-14","n":11831.768,"o":1477.47},{"d":"2025-01-15","n":11940.918,"o":1491.02},{"d":"2025-01-16","n":11918.0892,"o":1486.03},{"d":"2025-01-17","n":11923.165,"o":1493.65},{"d":"2025-01-20","n":11911.7992,"o":1491.21},{"d":"2025-01-21","n":11903.7209,"o":1485.35},{"d":"2025-01-22","n":11928.671,"o":1489.35},{"d":"2025-01-23","n":12010.0086,"o":1503.03},{"d":"2025-01-24","n":11944.1683,"o":1489.14},{"d":"2025-01-27","n":12031.275,"o":1491.68},{"d":"2025-01-28","n":12137.6117,"o":1498.11},{"d":"2025-01-29","n":12213.8082,"o":1510.49},{"d":"2025-01-30","n":12289.207,"o":1522.22},{"d":"2025-01-31","n":12218.388,"o":1515.46},{"d":"2025-02-03","n":12008.5301,"o":1498.83},{"d":"2025-02-04","n":12074.7571,"o":1510.13},{"d":"2025-02-05","n":12012.1543,"o":1502.11},{"d":"2025-02-06","n":12008.7336,"o":1499.25},{"d":"2025-02-07","n":11932.0308,"o":1485.1},{"d":"2025-02-10","n":11964.4694,"o":1487.44},{"d":"2025-02-11","n":12086.0024,"o":1505.01},{"d":"2025-02-12","n":11913.6518,"o":1481.21},{"d":"2025-02-13","n":11939.5315,"o":1482.34},{"d":"2025-02-14","n":11952.9905,"o":1488.2},{"d":"2025-02-17","n":11983.3392,"o":1491.36},{"d":"2025-02-18","n":11934.2991,"o":1491.05},{"d":"2025-02-19","n":11905.0694,"o":1497.79},{"d":"2025-02-20","n":11823.778,"o":1493.34},{"d":"2025-02-21","n":11860.3747,"o":1500.24},{"d":"2025-02-24","n":11883.3815,"o":1498.18},{"d":"2025-02-25","n":11910.0801,"o":1493.55},{"d":"2025-02-26","n":11923.6545,"o":1501.64},{"d":"2025-02-27","n":11838.7294,"o":1492.91},{"d":"2025-02-28","n":11785.3769,"o":1489.65},{"d":"2025-03-03","n":11748.7956,"o":1507.41},{"d":"2025-03-04","n":11407.8738,"o":1462.3},{"d":"2025-03-05","n":11486.8711,"o":1472.75},{"d":"2025-03-06","n":11494.3119,"o":1476.13},{"d":"2025-03-07","n":11600.0957,"o":1490.91},{"d":"2025-03-10","n":11540.7539,"o":1486.21},{"d":"2025-03-11","n":11444.4337,"o":1475.69},{"d":"2025-03-12","n":11451.0292,"o":1471.21},{"d":"2025-03-13","n":11558.5254,"o":1493.27},{"d":"2025-03-14","n":11670.9409,"o":1504.51},{"d":"2025-03-17","n":11788.2648,"o":1523.81},{"d":"2025-03-18","n":11882.9629,"o":1532.87},{"d":"2025-03-19","n":11963.9649,"o":1544.01},{"d":"2025-03-20","n":11940.6591,"o":1539.5},{"d":"2025-03-21","n":11917.1272,"o":1534.35},{"d":"2025-03-24","n":11868.4868,"o":1530.81},{"d":"2025-03-25","n":11890.5253,"o":1534.72},{"d":"2025-03-26","n":11978.3202,"o":1542.58},{"d":"2025-03-27","n":11895.0159,"o":1534.3},{"d":"2025-03-28","n":11729.2887,"o":1513.98},{"d":"2025-03-31","n":11705.3258,"o":1516.52},{"d":"2025-04-01","n":11692.5057,"o":1518.11},{"d":"2025-04-02","n":11567.1681,"o":1500.3},{"d":"2025-04-03","n":11276.0938,"o":1469.7},{"d":"2025-04-04","n":10812.5879,"o":1396.13},{"d":"2025-04-07","n":10747.0751,"o":1390.09},{"d":"2025-04-08","n":10830.211,"o":1401.52},{"d":"2025-04-09","n":10579.7514,"o":1362.84},{"d":"2025-04-10","n":10807.9561,"o":1401.51},{"d":"2025-04-11","n":10892.4726,"o":1407.76},{"d":"2025-04-14","n":11062.2642,"o":1434.74},{"d":"2025-04-15","n":11140.2815,"o":1446.78},{"d":"2025-04-16","n":11123.6531,"o":1447.47},{"d":"2025-04-17","n":11123.6531,"o":1447.47},{"d":"2025-04-18","n":11123.6531,"o":1447.47},{"d":"2025-04-21","n":11123.6531,"o":1447.47},{"d":"2025-04-22","n":11092.7301,"o":1437.37},{"d":"2025-04-23","n":11316.9859,"o":1453.91},{"d":"2025-04-24","n":11279.1455,"o":1452.23},{"d":"2025-04-25","n":11304.7775,"o":1456.43},{"d":"2025-04-28","n":11424.6784,"o":1467.54},{"d":"2025-04-29","n":11496.8669,"o":1472.35},{"d":"2025-04-30","n":11545.213,"o":1487.07},{"d":"2025-05-01","n":11545.213,"o":1487.07},{"d":"2025-05-02","n":11736.7125,"o":1510.15},{"d":"2025-05-05","n":11746.62,"o":1514.89},{"d":"2025-05-06","n":11685.9121,"o":1508.97},{"d":"2025-05-07","n":11692.1395,"o":1512.95},{"d":"2025-05-08","n":11693.3216,"o":1514.11},{"d":"2025-05-09","n":11739.8188,"o":1505.35},{"d":"2025-05-12","n":11915.1229,"o":1520.32},{"d":"2025-05-13","n":11927.0816,"o":1525.55},{"d":"2025-05-14","n":12040.1384,"o":1535.09},{"d":"2025-05-15","n":12121.46,"o":1547.17},{"d":"2025-05-16","n":12196.4829,"o":1565.56},{"d":"2025-05-19","n":12116.9083,"o":1558.73},{"d":"2025-05-20","n":12091.7201,"o":1561.46},{"d":"2025-05-21","n":12171.0818,"o":1569.15},{"d":"2025-05-22","n":12024.5115,"o":1546.79},{"d":"2025-05-23","n":12077.9421,"o":1549.67},{"d":"2025-05-26","n":12150.7072,"o":1564.87},{"d":"2025-05-27","n":12184.3938,"o":1574.52},{"d":"2025-05-28","n":12127.4019,"o":1564.95},{"d":"2025-05-29","n":12127.4019,"o":1564.95},{"d":"2025-05-30","n":12150.6795,"o":1561.61},{"d":"2025-06-02","n":12211.1479,"o":1569.64},{"d":"2025-06-03","n":12141.752,"o":1569.53},{"d":"2025-06-04","n":12291.3674,"o":1579.39},{"d":"2025-06-05","n":12247.1785,"o":1583.01},{"d":"2025-06-06","n":12358.315,"o":1584.61},{"d":"2025-06-09","n":12358.315,"o":1584.61},{"d":"2025-06-10","n":12458.5374,"o":1600.91},{"d":"2025-06-11","n":12498.8402,"o":1610.88},{"d":"2025-06-12","n":12496.8975,"o":1616.14},{"d":"2025-06-13","n":12522.2514,"o":1627.37},{"d":"2025-06-16","n":12547.8382,"o":1633.46},{"d":"2025-06-17","n":12524.2645,"o":1636.76},{"d":"2025-06-18","n":12489.9686,"o":1637.65},{"d":"2025-06-19","n":12538.3606,"o":1645.14},{"d":"2025-06-20","n":12544.6348,"o":1643.85},{"d":"2025-06-23","n":12524.8473,"o":1633.13},{"d":"2025-06-24","n":12464.0846,"o":1605.68},{"d":"2025-06-25","n":12509.6047,"o":1600.55},{"d":"2025-06-26","n":12481.8826,"o":1597.57},{"d":"2025-06-27","n":12581.0846,"o":1607.73},{"d":"2025-06-30","n":12663.0173,"o":1621.29},{"d":"2025-07-01","n":12593.4949,"o":1608.3},{"d":"2025-07-02","n":12763.2688,"o":1619.37},{"d":"2025-07-03","n":12834.0375,"o":1629.27},{"d":"2025-07-04","n":12837.1633,"o":1631.88},{"d":"2025-07-07","n":12838.2086,"o":1633.51},{"d":"2025-07-08","n":12835.1251,"o":1633.8},{"d":"2025-07-09","n":12884.4578,"o":1621.64},{"d":"2025-07-10","n":12856.8401,"o":1632.43},{"d":"2025-07-11","n":12794.1003,"o":1627.14},{"d":"2025-07-14","n":12885.1548,"o":1628.78},{"d":"2025-07-15","n":12895.8386,"o":1624.67},{"d":"2025-07-16","n":12827.79,"o":1609.63},{"d":"2025-07-17","n":12825.8603,"o":1610.4},{"d":"2025-07-18","n":12810.9008,"o":1616.92},{"d":"2025-07-21","n":12777.8163,"o":1608.18},{"d":"2025-07-22","n":12821.3204,"o":1612.43},{"d":"2025-07-23","n":12918.6605,"o":1614.08},{"d":"2025-07-24","n":13017.7419,"o":1624.96},{"d":"2025-07-25","n":12905.9309,"o":1614.53},{"d":"2025-07-28","n":12958.5363,"o":1625.05},{"d":"2025-07-29","n":12965.8255,"o":1633.47},{"d":"2025-07-30","n":12865.2799,"o":1621.45},{"d":"2025-07-31","n":12851.4958,"o":1625.25},{"d":"2025-08-01","n":12749.0568,"o":1605.43},{"d":"2025-08-04","n":12832.9285,"o":1616.5},{"d":"2025-08-05","n":12883.1217,"o":1623.18},{"d":"2025-08-06","n":12889.8375,"o":1624.55},{"d":"2025-08-07","n":12906.359,"o":1621.7},{"d":"2025-08-08","n":12934.1958,"o":1622.72},{"d":"2025-08-11","n":12841.4342,"o":1611.97},{"d":"2025-08-12","n":13015.0465,"o":1623.67},{"d":"2025-08-13","n":12972.1399,"o":1626.56},{"d":"2025-08-14","n":12922.591,"o":1630.9},{"d":"2025-08-15","n":12989.3576,"o":1634.23},{"d":"2025-08-18","n":12971.3945,"o":1632.69},{"d":"2025-08-19","n":13056.9469,"o":1635.64},{"d":"2025-08-20","n":13069.3807,"o":1644.9},{"d":"2025-08-21","n":13129.1355,"o":1657.37},{"d":"2025-08-22","n":13142.5693,"o":1664.42},{"d":"2025-08-25","n":13159.4578,"o":1661.86},{"d":"2025-08-26","n":13137.1286,"o":1659.54},{"d":"2025-08-27","n":12988.9155,"o":1646.08},{"d":"2025-08-28","n":12949.7218,"o":1636.18},{"d":"2025-08-29","n":13050.3931,"o":1646.47},{"d":"2025-09-01","n":12979.7741,"o":1647.12},{"d":"2025-09-02","n":12866.4707,"o":1632.74},{"d":"2025-09-03","n":12791.3535,"o":1619.0},{"d":"2025-09-04","n":12876.1586,"o":1629.72},{"d":"2025-09-05","n":12844.9723,"o":1625.88},{"d":"2025-09-08","n":12898.3519,"o":1632.64},{"d":"2025-09-09","n":12969.8025,"o":1641.09},{"d":"2025-09-10","n":13025.6535,"o":1653.18},{"d":"2025-09-11","n":13053.1238,"o":1652.98},{"d":"2025-09-12","n":13067.7672,"o":1654.62},{"d":"2025-09-15","n":13214.4359,"o":1664.18},{"d":"2025-09-16","n":13149.4206,"o":1657.19},{"d":"2025-09-17","n":13123.18,"o":1650.53},{"d":"2025-09-18","n":13166.0723,"o":1651.25},{"d":"2025-09-19","n":13083.3132,"o":1645.65},{"d":"2025-09-22","n":13015.2835,"o":1641.51},{"d":"2025-09-23","n":13095.8763,"o":1655.91},{"d":"2025-09-24","n":13105.9589,"o":1662.61},{"d":"2025-09-25","n":13035.6892,"o":1655.92},{"d":"2025-09-26","n":13076.6126,"o":1662.43},{"d":"2025-09-29","n":13050.2047,"o":1657.67},{"d":"2025-09-30","n":12986.7089,"o":1644.57},{"d":"2025-10-01","n":13093.5476,"o":1657.71},{"d":"2025-10-02","n":12957.0595,"o":1650.48},{"d":"2025-10-03","n":12988.6025,"o":1659.31},{"d":"2025-10-06","n":13050.2533,"o":1668.04},{"d":"2025-10-07","n":12999.2805,"o":1649.49},{"d":"2025-10-08","n":13030.7329,"o":1652.36},{"d":"2025-10-09","n":13064.7904,"o":1653.12},{"d":"2025-10-10","n":13071.1377,"o":1650.86},{"d":"2025-10-13","n":13020.2303,"o":1638.62},{"d":"2025-10-14","n":12997.4262,"o":1632.14},{"d":"2025-10-15","n":13172.5396,"o":1643.17},{"d":"2025-10-16","n":13175.2575,"o":1643.87},{"d":"2025-10-17","n":13114.4066,"o":1623.18},{"d":"2025-10-20","n":13159.0034,"o":1628.46},{"d":"2025-10-21","n":13124.0046,"o":1632.15},{"d":"2025-10-22","n":13153.1829,"o":1627.71},{"d":"2025-10-23","n":13244.4247,"o":1652.59},{"d":"2025-10-24","n":13151.0985,"o":1642.83},{"d":"2025-10-27","n":13156.0547,"o":1646.78},{"d":"2025-10-28","n":13087.1965,"o":1638.19},{"d":"2025-10-29","n":13182.1598,"o":1639.8},{"d":"2025-10-30","n":13040.2791,"o":1607.59},{"d":"2025-10-31","n":13008.2639,"o":1611.8},{"d":"2025-11-03","n":13052.365,"o":1619.26},{"d":"2025-11-04","n":12943.4726,"o":1606.91},{"d":"2025-11-05","n":12975.3919,"o":1609.67},{"d":"2025-11-06","n":12914.2149,"o":1603.62},{"d":"2025-11-07","n":12880.5883,"o":1599.21},{"d":"2025-11-10","n":12950.4061,"o":1607.11},{"d":"2025-11-11","n":13046.3973,"o":1616.91},{"d":"2025-11-12","n":13087.6153,"o":1622.41},{"d":"2025-11-13","n":13110.4183,"o":1623.58},{"d":"2025-11-14","n":13025.6254,"o":1614.79},{"d":"2025-11-17","n":13064.4422,"o":1619.15},{"d":"2025-11-18","n":12840.107,"o":1585.79},{"d":"2025-11-19","n":12938.7723,"o":1583.83},{"d":"2025-11-20","n":13040.7925,"o":1601.78},{"d":"2025-11-21","n":12963.7808,"o":1583.67},{"d":"2025-11-24","n":12979.1187,"o":1581.82},{"d":"2025-11-25","n":13071.9828,"o":1585.53},{"d":"2025-11-26","n":13146.6814,"o":1596.82},{"d":"2025-11-27","n":13224.3957,"o":1608.34},{"d":"2025-11-28","n":13241.8715,"o":1609.67},{"d":"2025-12-01","n":13222.9316,"o":1605.87},{"d":"2025-12-02","n":13239.5387,"o":1605.3},{"d":"2025-12-03","n":13335.3157,"o":1616.0},{"d":"2025-12-04","n":13386.716,"o":1625.29},{"d":"2025-12-05","n":13455.3046,"o":1632.45},{"d":"2025-12-08","n":13519.7756,"o":1640.22},{"d":"2025-12-09","n":13456.7008,"o":1638.15},{"d":"2025-12-10","n":13465.1738,"o":1628.34},{"d":"2025-12-11","n":13534.0006,"o":1641.11},{"d":"2025-12-12","n":13545.2469,"o":1642.81},{"d":"2025-12-15","n":13619.108,"o":1647.08},{"d":"2025-12-16","n":13580.8468,"o":1635.99},{"d":"2025-12-17","n":13671.6392,"o":1649.54},{"d":"2025-12-18","n":13663.7999,"o":1649.68},{"d":"2025-12-19","n":13801.5627,"o":1660.14},{"d":"2025-12-22","n":13837.6972,"o":1662.43},{"d":"2025-12-23","n":13875.3607,"o":1666.51},{"d":"2025-12-24","n":13875.3607,"o":1666.51},{"d":"2025-12-25","n":13875.3607,"o":1666.51},{"d":"2025-12-26","n":13875.3607,"o":1666.51},{"d":"2025-12-29","n":13971.4535,"o":1676.17},{"d":"2025-12-30","n":14087.4161,"o":1687.77},{"d":"2025-12-31","n":14087.818,"o":1687.77},{"d":"2026-01-01","n":14087.818,"o":1687.77},{"d":"2026-01-02","n":14059.3284,"o":1696.95},{"d":"2026-01-05","n":13907.7104,"o":1686.98},{"d":"2026-01-06","n":13938.7194,"o":1697.89},{"d":"2026-01-07","n":13866.224,"o":1681.32},{"d":"2026-01-08","n":13849.5818,"o":1683.91},{"d":"2026-01-09","n":13814.4438,"o":1697.17},{"d":"2026-01-12","n":13850.23,"o":1703.65},{"d":"2026-01-13","n":13989.7854,"o":1717.28},{"d":"2026-01-14","n":14049.7543,"o":1729.23},{"d":"2026-01-15","n":14124.9308,"o":1731.49},{"d":"2026-01-16","n":14126.2329,"o":1750.9},{"d":"2026-01-19","n":13851.6182,"o":1721.71},{"d":"2026-01-20","n":13853.599,"o":1724.87},{"d":"2026-01-21","n":13854.1983,"o":1731.94},{"d":"2026-01-22","n":13928.5044,"o":1725.2},{"d":"2026-01-23","n":13947.6397,"o":1733.38},{"d":"2026-01-26","n":13955.857,"o":1736.76},{"d":"2026-01-27","n":13997.1654,"o":1742.8},{"d":"2026-01-28","n":14003.2383,"o":1749.57},{"d":"2026-01-29","n":14056.975,"o":1756.57},{"d":"2026-01-30","n":14110.8853,"o":1760.38},{"d":"2026-02-02","n":14086.4126,"o":1757.17},{"d":"2026-02-03","n":14167.8159,"o":1759.71},{"d":"2026-02-04","n":14103.4632,"o":1765.77},{"d":"2026-02-05","n":14134.7745,"o":1767.03},{"d":"2026-02-06","n":14321.0929,"o":1816.11},{"d":"2026-02-09","n":14338.1452,"o":1823.3},{"d":"2026-02-10","n":14395.1081,"o":1825.59},{"d":"2026-02-11","n":14382.4108,"o":1828.17},{"d":"2026-02-12","n":14470.6145,"o":1838.06},{"d":"2026-02-13","n":14358.8009,"o":1822.94},{"d":"2026-02-16","n":14441.618,"o":1827.51},{"d":"2026-02-17","n":14504.4459,"o":1820.66},{"d":"2026-02-18","n":14680.2258,"o":1858.76},{"d":"2026-02-19","n":14740.5471,"o":1870.56},{"d":"2026-02-20","n":14938.9417,"o":1884.15},{"d":"2026-02-23","n":14832.7023,"o":1875.29},{"d":"2026-02-24","n":14890.0987,"o":1877.2},{"d":"2026-02-25","n":14977.2475,"o":1882.58},{"d":"2026-02-26","n":14935.8144,"o":1875.3},{"d":"2026-02-27","n":15037.586,"o":1892.04},{"d":"2026-03-02","n":14989.1407,"o":1914.86},{"d":"2026-03-03","n":14726.5433,"o":1887.45},{"d":"2026-03-04","n":14917.859,"o":1908.06},{"d":"2026-03-05","n":14951.1925,"o":1905.71},{"d":"2026-03-06","n":14856.6082,"o":1904.18},{"d":"2026-03-09","n":14790.5067,"o":1910.1},{"d":"2026-03-10","n":14856.6863,"o":1905.68},{"d":"2026-03-11","n":14925.9091,"o":1914.28},{"d":"2026-03-12","n":15052.6041,"o":1937.55},{"d":"2026-03-13","n":15077.4036,"o":1945.95},{"d":"2026-03-16","n":15142.6123,"o":1966.63},{"d":"2026-03-17","n":15140.5774,"o":1972.42},{"d":"2026-03-18","n":15200.0666,"o":1986.11},{"d":"2026-03-19","n":15032.6226,"o":1998.47},{"d":"2026-03-20","n":14863.5519,"o":1966.5},{"d":"2026-03-23","n":14715.4702,"o":1948.83},{"d":"2026-03-24","n":14794.724,"o":1956.18},{"d":"2026-03-25","n":14967.7814,"o":1980.05},{"d":"2026-03-26","n":15053.1626,"o":1988.05},{"d":"2026-03-27","n":14940.2247,"o":1981.56},{"d":"2026-03-30","n":15266.9754,"o":2037.84},{"d":"2026-03-31","n":15444.3645,"o":2067.97},{"d":"2026-04-01","n":15407.1084,"o":2053.05},{"d":"2026-04-02","n":15407.1084,"o":2053.05},{"d":"2026-04-03","n":15407.1084,"o":2053.05},{"d":"2026-04-06","n":15407.1084,"o":2053.05},{"d":"2026-04-07","n":15545.134,"o":2080.56},{"d":"2026-04-08","n":15464.5421,"o":2022.97},{"d":"2026-04-09","n":15616.7163,"o":2060.64},{"d":"2026-04-10","n":15552.9231,"o":2043.61},{"d":"2026-04-13","n":15533.7468,"o":2048.99},{"d":"2026-04-14","n":15521.4316,"o":2032.97},{"d":"2026-04-15","n":15426.0922,"o":2019.49},{"d":"2026-04-16","n":15419.2328,"o":2017.43},{"d":"2026-04-17","n":15181.1822,"o":1968.36},{"d":"2026-04-20","n":15265.9509,"o":1980.01},{"d":"2026-04-21","n":15280.1394,"o":1993.14},{"d":"2026-04-22","n":15291.641,"o":1997.57},{"d":"2026-04-23","n":15215.5961,"o":2003.83},{"d":"2026-04-24","n":15238.3898,"o":1994.27},{"d":"2026-04-27","n":15182.7415,"o":1986.63},{"d":"2026-04-28","n":15296.3311,"o":1993.31}]
+
+const EMBEDDED_NAV = [{"d":"2021-12-20","n":8645.2195,"o":1160.73},{"d":"2021-12-21","n":8762.2985,"o":1185.26},{"d":"2021-12-22","n":8772.7597,"o":1185.88},{"d":"2021-12-23","n":8917.8474,"o":1195.42},{"d":"2021-12-24","n":8917.8474,"o":1195.42},{"d":"2021-12-27","n":8976.8555,"o":1200.3},{"d":"2021-12-28","n":9061.9234,"o":1204.76},{"d":"2021-12-29","n":9034.6233,"o":1199.34},{"d":"2021-12-30","n":9082.9589,"o":1201.43},{"d":"2021-12-31","n":9082.2421,"o":1201.43},{"d":"2022-01-03","n":9116.7322,"o":1211.32},{"d":"2022-01-04","n":9176.7809,"o":1213.54},{"d":"2022-01-05","n":9225.0505,"o":1221.2},{"d":"2022-01-06","n":9183.9628,"o":1204.44},{"d":"2022-01-07","n":9262.3949,"o":1207.93},{"d":"2022-01-10","n":9186.2656,"o":1190.13},{"d":"2022-01-11","n":9269.2773,"o":1196.98},{"d":"2022-01-12","n":9417.0574,"o":1216.04},{"d":"2022-01-13","n":9439.0624,"o":1215.53},{"d":"2022-01-14","n":9475.197,"o":1218.95},{"d":"2022-01-17","n":9488.7893,"o":1217.63},{"d":"2022-01-18","n":9453.7858,"o":1215.43},{"d":"2022-01-19","n":9344.0939,"o":1205.41},{"d":"2022-01-20","n":9338.706,"o":1205.03},{"d":"2022-01-21","n":9205.7115,"o":1182.75},{"d":"2022-01-24","n":8880.1862,"o":1142.0},{"d":"2022-01-25","n":8992.3554,"o":1151.77},{"d":"2022-01-26","n":9180.562,"o":1184.23},{"d":"2022-01-27","n":9256.0045,"o":1182.89},{"d":"2022-01-28","n":9164.7989,"o":1170.08},{"d":"2022-01-31","n":9154.4862,"o":1174.86},{"d":"2022-02-01","n":9266.5161,"o":1190.83},{"d":"2022-02-02","n":9356.2532,"o":1197.39},{"d":"2022-02-03","n":9316.1208,"o":1185.9},{"d":"2022-02-04","n":9370.5029,"o":1192.49},{"d":"2022-02-07","n":9440.7818,"o":1204.2},{"d":"2022-02-08","n":9368.6293,"o":1190.53},{"d":"2022-02-09","n":9441.5208,"o":1203.64},{"d":"2022-02-10","n":9524.7881,"o":1206.47},{"d":"2022-02-11","n":9649.5438,"o":1213.67},{"d":"2022-02-14","n":9505.9196,"o":1198.69},{"d":"2022-02-15","n":9460.5619,"o":1191.11},{"d":"2022-02-16","n":9536.9798,"o":1201.05},{"d":"2022-02-17","n":9448.4371,"o":1193.66},{"d":"2022-02-18","n":9454.2164,"o":1188.94},{"d":"2022-02-21","n":9392.2701,"o":1183.35},{"d":"2022-02-22","n":9346.2173,"o":1179.84},{"d":"2022-02-23","n":9370.7442,"o":1188.36},{"d":"2022-02-24","n":9205.2152,"o":1174.34},{"d":"2022-02-25","n":9351.6634,"o":1185.91},{"d":"2022-02-28","n":9373.7195,"o":1202.17},{"d":"2022-03-01","n":9399.3855,"o":1222.77},{"d":"2022-03-02","n":9398.5853,"o":1228.67},{"d":"2022-03-03","n":9368.4067,"o":1213.17},{"d":"2022-03-04","n":9145.4141,"o":1190.4},{"d":"2022-03-07","n":8965.6137,"o":1181.14},{"d":"2022-03-08","n":8898.5771,"o":1183.51},{"d":"2022-03-09","n":9066.7258,"o":1191.74},{"d":"2022-03-10","n":9158.6794,"o":1193.62},{"d":"2022-03-11","n":9207.4966,"o":1194.29},{"d":"2022-03-14","n":9279.9926,"o":1199.03},{"d":"2022-03-15","n":9192.5144,"o":1180.15},{"d":"2022-03-16","n":9429.6234,"o":1213.54},{"d":"2022-03-17","n":9451.6876,"o":1226.58},{"d":"2022-03-18","n":9423.8091,"o":1228.54},{"d":"2022-03-21","n":9649.1855,"o":1258.6},{"d":"2022-03-22","n":9740.21,"o":1263.43},{"d":"2022-03-23","n":9710.0619,"o":1261.45},{"d":"2022-03-24","n":9675.2274,"o":1256.87},{"d":"2022-03-25","n":9741.1824,"o":1261.53},{"d":"2022-03-28","n":9778.0508,"o":1261.72},{"d":"2022-03-29","n":9702.3497,"o":1246.57},{"d":"2022-03-30","n":9839.7677,"o":1273.82},{"d":"2022-03-31","n":9697.2155,"o":1261.35},{"d":"2022-04-01","n":9822.5609,"o":1269.84},{"d":"2022-04-04","n":9782.386,"o":1264.57},{"d":"2022-04-05","n":9813.0467,"o":1266.0},{"d":"2022-04-06","n":9762.7757,"o":1259.26},{"d":"2022-04-07","n":9757.3965,"o":1254.66},{"d":"2022-04-08","n":9941.4302,"o":1276.62},{"d":"2022-04-11","n":9946.8562,"o":1263.63},{"d":"2022-04-12","n":9909.8685,"o":1265.1},{"d":"2022-04-13","n":9991.6752,"o":1283.13},{"d":"2022-04-14","n":9991.6752,"o":1283.13},{"d":"2022-04-15","n":9991.6752,"o":1283.13},{"d":"2022-04-18","n":9991.6752,"o":1283.13},{"d":"2022-04-19","n":10018.4036,"o":1279.07},{"d":"2022-04-20","n":10022.0924,"o":1280.83},{"d":"2022-04-21","n":10150.4521,"o":1285.21},{"d":"2022-04-22","n":10050.0354,"o":1263.88},{"d":"2022-04-25","n":9780.1869,"o":1226.11},{"d":"2022-04-26","n":9784.0595,"o":1226.68},{"d":"2022-04-27","n":9825.9985,"o":1239.41},{"d":"2022-04-28","n":9819.8595,"o":1234.47},{"d":"2022-04-29","n":9877.4135,"o":1239.82},{"d":"2022-05-02","n":9745.7747,"o":1218.36},{"d":"2022-05-03","n":9802.775,"o":1231.9},{"d":"2022-05-04","n":9835.1829,"o":1240.45},{"d":"2022-05-05","n":9773.1673,"o":1234.41},{"d":"2022-05-06","n":9621.0735,"o":1213.84},{"d":"2022-05-09","n":9468.8037,"o":1177.41},{"d":"2022-05-10","n":9483.3553,"o":1178.51},{"d":"2022-05-11","n":9555.9917,"o":1193.27},{"d":"2022-05-12","n":9437.7294,"o":1186.72},{"d":"2022-05-13","n":9546.7464,"o":1214.73},{"d":"2022-05-16","n":9632.8399,"o":1219.44},{"d":"2022-05-17","n":9632.8399,"o":1219.44},{"d":"2022-05-18","n":9703.7243,"o":1238.55},{"d":"2022-05-19","n":9605.9717,"o":1223.25},{"d":"2022-05-20","n":9686.7918,"o":1238.12},{"d":"2022-05-23","n":9780.4395,"o":1246.98},{"d":"2022-05-24","n":9783.5099,"o":1244.12},{"d":"2022-05-25","n":9828.3507,"o":1261.77},{"d":"2022-05-26","n":9828.3507,"o":1261.77},{"d":"2022-05-27","n":9859.7742,"o":1276.54},{"d":"2022-05-30","n":9828.6122,"o":1275.64},{"d":"2022-05-31","n":9882.5855,"o":1287.39},{"d":"2022-06-01","n":9861.3874,"o":1269.24},{"d":"2022-06-02","n":9880.7916,"o":1266.18},{"d":"2022-06-03","n":9889.1465,"o":1266.59},{"d":"2022-06-06","n":9889.1465,"o":1266.59},{"d":"2022-06-07","n":9881.3412,"o":1270.71},{"d":"2022-06-08","n":9804.7062,"o":1268.63},{"d":"2022-06-09","n":9765.6614,"o":1261.0},{"d":"2022-06-10","n":9554.8013,"o":1232.67},{"d":"2022-06-13","n":9282.5304,"o":1194.04},{"d":"2022-06-14","n":9337.9669,"o":1215.66},{"d":"2022-06-15","n":9398.3856,"o":1223.43},{"d":"2022-06-16","n":9167.9981,"o":1191.84},{"d":"2022-06-17","n":9207.8057,"o":1195.93},{"d":"2022-06-20","n":9267.255,"o":1214.53},{"d":"2022-06-21","n":9204.1479,"o":1198.82},{"d":"2022-06-22","n":9003.8439,"o":1163.57},{"d":"2022-06-23","n":8902.5323,"o":1154.27},{"d":"2022-06-24","n":8915.3401,"o":1161.22},{"d":"2022-06-27","n":9060.1338,"o":1182.1},{"d":"2022-06-28","n":9221.1141,"o":1207.57},{"d":"2022-06-29","n":9073.1769,"o":1197.48},{"d":"2022-06-30","n":8862.958,"o":1170.28},{"d":"2022-07-01","n":8790.6299,"o":1163.57},{"d":"2022-07-04","n":8966.605,"o":1195.17},{"d":"2022-07-05","n":8768.9128,"o":1168.55},{"d":"2022-07-06","n":8741.6236,"o":1159.55},{"d":"2022-07-07","n":8988.2651,"o":1195.33},{"d":"2022-07-08","n":8968.4946,"o":1186.44},{"d":"2022-07-11","n":8960.6245,"o":1193.39},{"d":"2022-07-12","n":9021.5035,"o":1192.06},{"d":"2022-07-13","n":8918.1254,"o":1178.74},{"d":"2022-07-14","n":8786.1937,"o":1151.23},{"d":"2022-07-15","n":8943.2631,"o":1159.96},{"d":"2022-07-18","n":9084.9668,"o":1193.88},{"d":"2022-07-19","n":9182.5842,"o":1196.75},{"d":"2022-07-20","n":9217.8446,"o":1206.45},{"d":"2022-07-21","n":9124.8406,"o":1185.12},{"d":"2022-07-22","n":9232.6717,"o":1204.0},{"d":"2022-07-25","n":9257.3842,"o":1202.36},{"d":"2022-07-26","n":9233.1747,"o":1210.13},{"d":"2022-07-27","n":9339.2631,"o":1217.13},{"d":"2022-07-28","n":9351.7158,"o":1224.52},{"d":"2022-07-29","n":9481.6669,"o":1253.18},{"d":"2022-08-01","n":9464.9242,"o":1241.55},{"d":"2022-08-02","n":9464.9242,"o":1248.45},{"d":"2022-08-03","n":9483.7504,"o":1247.43},{"d":"2022-08-04","n":9393.4173,"o":1241.18},{"d":"2022-08-05","n":9420.2855,"o":1245.18},{"d":"2022-08-08","n":9398.5281,"o":1243.8},{"d":"2022-08-09","n":9418.2204,"o":1255.04},{"d":"2022-08-10","n":9356.4417,"o":1248.47},{"d":"2022-08-11","n":9446.6104,"o":1266.59},{"d":"2022-08-12","n":9484.6415,"o":1261.75},{"d":"2022-08-15","n":9388.5862,"o":1250.34},{"d":"2022-08-16","n":9479.62,"o":1266.18},{"d":"2022-08-17","n":9372.0039,"o":1257.03},{"d":"2022-08-18","n":9476.6959,"o":1265.69},{"d":"2022-08-19","n":9493.2137,"o":1269.04},{"d":"2022-08-22","n":9370.1971,"o":1262.57},{"d":"2022-08-23","n":9488.6263,"o":1278.08},{"d":"2022-08-24","n":9465.5225,"o":1280.19},{"d":"2022-08-25","n":9465.9748,"o":1281.33},{"d":"2022-08-26","n":9373.6105,"o":1276.1},{"d":"2022-08-29","n":9293.4864,"o":1260.07},{"d":"2022-08-30","n":9245.1209,"o":1244.63},{"d":"2022-08-31","n":9261.913,"o":1248.67},{"d":"2022-09-01","n":9199.0965,"o":1234.61},{"d":"2022-09-02","n":9205.8178,"o":1237.67},{"d":"2022-09-05","n":9152.4182,"o":1247.7},{"d":"2022-09-06","n":8903.2569,"o":1206.85},{"d":"2022-09-07","n":8770.1987,"o":1179.27},{"d":"2022-09-08","n":8805.811,"o":1185.91},{"d":"2022-09-09","n":8993.1721,"o":1207.61},{"d":"2022-09-12","n":9115.2012,"o":1219.6},{"d":"2022-09-13","n":9103.6048,"o":1217.47},{"d":"2022-09-14","n":9019.9244,"o":1209.77},{"d":"2022-09-15","n":9054.4758,"o":1204.39},{"d":"2022-09-16","n":8884.2356,"o":1175.15},{"d":"2022-09-19","n":8860.2712,"o":1166.66},{"d":"2022-09-20","n":8755.5485,"o":1155.73},{"d":"2022-09-21","n":8790.0491,"o":1163.23},{"d":"2022-09-22","n":8736.5019,"o":1159.05},{"d":"2022-09-23","n":8487.7983,"o":1112.2},{"d":"2022-09-26","n":8429.0714,"o":1117.28},{"d":"2022-09-27","n":8426.3601,"o":1128.07},{"d":"2022-09-28","n":7965.8906,"o":1096.96},{"d":"2022-09-29","n":7823.0089,"o":1079.64},{"d":"2022-09-30","n":8000.9967,"o":1102.79},{"d":"2022-10-03","n":8157.0044,"o":1130.71},{"d":"2022-10-04","n":8210.2964,"o":1144.27},{"d":"2022-10-05","n":8124.262,"o":1135.54},{"d":"2022-10-06","n":8172.7304,"o":1134.04},{"d":"2022-10-07","n":8194.4485,"o":1136.43},{"d":"2022-10-10","n":8223.3254,"o":1134.89},{"d":"2022-10-11","n":8173.3482,"o":1117.46},{"d":"2022-10-12","n":8089.4198,"o":1107.24},{"d":"2022-10-13","n":8180.565,"o":1121.56},{"d":"2022-10-14","n":8131.4346,"o":1113.2},{"d":"2022-10-17","n":8239.5772,"o":1125.46},{"d":"2022-10-18","n":8363.378,"o":1135.78},{"d":"2022-10-19","n":8394.5429,"o":1133.61},{"d":"2022-10-20","n":8407.1014,"o":1141.4},{"d":"2022-10-21","n":8388.5884,"o":1131.55},{"d":"2022-10-24","n":8423.6835,"o":1134.4},{"d":"2022-10-25","n":8395.1648,"o":1139.47},{"d":"2022-10-26","n":8486.4312,"o":1152.22},{"d":"2022-10-27","n":8526.5239,"o":1165.06},{"d":"2022-10-28","n":8478.9611,"o":1164.49},{"d":"2022-10-31","n":8614.7332,"o":1175.45},{"d":"2022-11-01","n":8634.7708,"o":1190.61},{"d":"2022-11-02","n":8663.9075,"o":1185.42},{"d":"2022-11-03","n":8683.2989,"o":1188.42},{"d":"2022-11-04","n":8789.322,"o":1199.27},{"d":"2022-11-07","n":8826.4715,"o":1202.74},{"d":"2022-11-08","n":8870.8969,"o":1197.13},{"d":"2022-11-09","n":8810.2713,"o":1189.94},{"d":"2022-11-10","n":8817.7041,"o":1190.01},{"d":"2022-11-11","n":8851.4576,"o":1196.21},{"d":"2022-11-14","n":8837.4634,"o":1199.72},{"d":"2022-11-15","n":8868.0721,"o":1200.83},{"d":"2022-11-16","n":8835.2621,"o":1194.57},{"d":"2022-11-17","n":8813.2735,"o":1181.22},{"d":"2022-11-18","n":8790.9649,"o":1176.51},{"d":"2022-11-21","n":8728.8317,"o":1169.09},{"d":"2022-11-22","n":8843.1564,"o":1193.23},{"d":"2022-11-23","n":8857.8605,"o":1201.23},{"d":"2022-11-24","n":8929.6094,"o":1214.37},{"d":"2022-11-25","n":8972.618,"o":1215.51},{"d":"2022-11-28","n":8885.8425,"o":1200.96},{"d":"2022-11-29","n":8984.3011,"o":1217.37},{"d":"2022-11-30","n":8987.6772,"o":1220.76},{"d":"2022-12-01","n":9008.264,"o":1222.56},{"d":"2022-12-02","n":8958.6983,"o":1210.04},{"d":"2022-12-05","n":8967.5523,"o":1212.76},{"d":"2022-12-06","n":8933.3685,"o":1202.32},{"d":"2022-12-07","n":8817.5372,"o":1182.84},{"d":"2022-12-08","n":8829.5327,"o":1190.02},{"d":"2022-12-09","n":8911.1517,"o":1196.53},{"d":"2022-12-12","n":8926.0987,"o":1196.14},{"d":"2022-12-13","n":8974.0063,"o":1217.03},{"d":"2022-12-14","n":8889.9042,"o":1202.88},{"d":"2022-12-15","n":8867.7236,"o":1195.32},{"d":"2022-12-16","n":8855.4785,"o":1180.79},{"d":"2022-12-19","n":8855.9957,"o":1186.8},{"d":"2022-12-20","n":8937.7257,"o":1185.59},{"d":"2022-12-21","n":9110.9219,"o":1200.15},{"d":"2022-12-22","n":9134.2204,"o":1196.5},{"d":"2022-12-23","n":9155.7224,"o":1199.71},{"d":"2022-12-26","n":9155.7224,"o":1199.71},{"d":"2022-12-27","n":9180.1978,"o":1199.95},{"d":"2022-12-28","n":9139.8056,"o":1190.8},{"d":"2022-12-29","n":9187.0786,"o":1197.77},{"d":"2022-12-30","n":9186.54,"o":1189.0},{"d":"2023-01-02","n":9161.4279,"o":1197.1},{"d":"2023-01-03","n":9108.8921,"o":1182.96},{"d":"2023-01-04","n":9042.1097,"o":1165.22},{"d":"2023-01-05","n":9086.5927,"o":1173.78},{"d":"2023-01-06","n":9167.1284,"o":1185.82},{"d":"2023-01-09","n":9236.2232,"o":1194.15},{"d":"2023-01-10","n":9172.7742,"o":1184.78},{"d":"2023-01-11","n":9149.0348,"o":1182.96},{"d":"2023-01-12","n":9238.7007,"o":1194.4},{"d":"2023-01-13","n":9321.4402,"o":1192.51},{"d":"2023-01-16","n":9303.8299,"o":1186.62},{"d":"2023-01-17","n":9333.7125,"o":1196.14},{"d":"2023-01-18","n":9371.1955,"o":1200.01},{"d":"2023-01-19","n":9292.4837,"o":1182.66},{"d":"2023-01-20","n":9327.7394,"o":1189.32},{"d":"2023-01-23","n":9359.5135,"o":1198.7},{"d":"2023-01-24","n":9347.3812,"o":1191.89},{"d":"2023-01-25","n":9316.0052,"o":1180.51},{"d":"2023-01-26","n":9336.447,"o":1182.66},{"d":"2023-01-27","n":9434.1503,"o":1199.16},{"d":"2023-01-30","n":9444.0459,"o":1195.09},{"d":"2023-01-31","n":9469.1594,"o":1195.44},{"d":"2023-02-01","n":9546.3587,"o":1206.83},{"d":"2023-02-02","n":9462.7113,"o":1199.32},{"d":"2023-02-03","n":9509.1634,"o":1211.35},{"d":"2023-02-06","n":9465.183,"o":1202.75},{"d":"2023-02-07","n":9591.6997,"o":1209.57},{"d":"2023-02-08","n":9845.6556,"o":1239.75},{"d":"2023-02-09","n":9793.5512,"o":1236.66},{"d":"2023-02-10","n":9761.0795,"o":1238.25},{"d":"2023-02-13","n":9787.2273,"o":1236.7},{"d":"2023-02-14","n":9809.8622,"o":1236.83},{"d":"2023-02-15","n":9863.5019,"o":1234.8},{"d":"2023-02-16","n":9844.4997,"o":1240.4},{"d":"2023-02-17","n":9808.4544,"o":1229.49},{"d":"2023-02-20","n":9854.9815,"o":1234.68},{"d":"2023-02-21","n":9763.4321,"o":1227.02},{"d":"2023-02-22","n":9697.0187,"o":1219.74},{"d":"2023-02-23","n":9757.8235,"o":1235.65},{"d":"2023-02-24","n":9754.936,"o":1226.65},{"d":"2023-02-27","n":9857.6937,"o":1237.19},{"d":"2023-02-28","n":9930.6474,"o":1240.92},{"d":"2023-03-01","n":9958.8568,"o":1242.54},{"d":"2023-03-02","n":10001.9666,"o":1250.4},{"d":"2023-03-03","n":10022.4426,"o":1255.92},{"d":"2023-03-06","n":9980.4052,"o":1255.39},{"d":"2023-03-07","n":9901.7228,"o":1245.34},{"d":"2023-03-08","n":9912.389,"o":1243.59},{"d":"2023-03-09","n":9839.5356,"o":1233.56},{"d":"2023-03-10","n":9752.9497,"o":1220.58},{"d":"2023-03-13","n":9446.873,"o":1188.94},{"d":"2023-03-14","n":9560.8778,"o":1205.33},{"d":"2023-03-15","n":9233.341,"o":1160.25},{"d":"2023-03-16","n":9209.7952,"o":1160.0},{"d":"2023-03-17","n":9130.3772,"o":1153.0},{"d":"2023-03-20","n":9233.9344,"o":1165.34},{"d":"2023-03-21","n":9319.9587,"o":1176.5},{"d":"2023-03-22","n":9311.4293,"o":1178.18},{"d":"2023-03-23","n":9276.3894,"o":1176.41},{"d":"2023-03-24","n":9026.5825,"o":1141.95},{"d":"2023-03-27","n":9164.7418,"o":1158.81},{"d":"2023-03-28","n":9190.745,"o":1159.63},{"d":"2023-03-29","n":9288.5369,"o":1168.59},{"d":"2023-03-30","n":9453.0678,"o":1184.66},{"d":"2023-03-31","n":9546.6873,"o":1193.57},{"d":"2023-04-03","n":9600.3953,"o":1208.6},{"d":"2023-04-04","n":9559.9533,"o":1201.41},{"d":"2023-04-05","n":9498.7179,"o":1195.23},{"d":"2023-04-06","n":9498.7179,"o":1195.23},{"d":"2023-04-07","n":9498.7179,"o":1195.23},{"d":"2023-04-10","n":9498.7179,"o":1195.23},{"d":"2023-04-11","n":9649.1842,"o":1209.83},{"d":"2023-04-12","n":9683.7298,"o":1215.64},{"d":"2023-04-13","n":9670.8237,"o":1216.15},{"d":"2023-04-14","n":9728.8459,"o":1224.58},{"d":"2023-04-17","n":9737.0722,"o":1227.25},{"d":"2023-04-18","n":9763.3007,"o":1228.08},{"d":"2023-04-19","n":9744.2014,"o":1220.72},{"d":"2023-04-20","n":9734.8102,"o":1214.6},{"d":"2023-04-21","n":9753.6822,"o":1210.24},{"d":"2023-04-24","n":9786.3574,"o":1219.8},{"d":"2023-04-25","n":9731.5699,"o":1204.62},{"d":"2023-04-26","n":9738.6222,"o":1204.81},{"d":"2023-04-27","n":9818.0892,"o":1213.16},{"d":"2023-04-28","n":9865.8221,"o":1226.44},{"d":"2023-05-01","n":9865.8221,"o":1226.44},{"d":"2023-05-02","n":9793.8919,"o":1208.41},{"d":"2023-05-03","n":9721.3797,"o":1203.48},{"d":"2023-05-04","n":9576.2156,"o":1189.72},{"d":"2023-05-05","n":9591.6115,"o":1204.54},{"d":"2023-05-08","n":9674.0136,"o":1213.09},{"d":"2023-05-09","n":9602.0369,"o":1202.34},{"d":"2023-05-10","n":9654.6396,"o":1204.02},{"d":"2023-05-11","n":9659.8772,"o":1201.49},{"d":"2023-05-12","n":9692.7062,"o":1213.11},{"d":"2023-05-15","n":9679.3733,"o":1216.65},{"d":"2023-05-16","n":9631.0196,"o":1210.96},{"d":"2023-05-17","n":9631.0196,"o":1210.96},{"d":"2023-05-18","n":9631.0196,"o":1210.96},{"d":"2023-05-19","n":9716.0681,"o":1225.4},{"d":"2023-05-22","n":9648.2584,"o":1220.66},{"d":"2023-05-23","n":9665.304,"o":1227.39},{"d":"2023-05-24","n":9639.1803,"o":1221.23},{"d":"2023-05-25","n":9638.7094,"o":1219.16},{"d":"2023-05-26","n":9584.4034,"o":1215.57},{"d":"2023-05-29","n":9584.4034,"o":1215.57},{"d":"2023-05-30","n":9557.7762,"o":1209.81},{"d":"2023-05-31","n":9446.0059,"o":1198.54},{"d":"2023-06-01","n":9409.7233,"o":1202.0},{"d":"2023-06-02","n":9588.3129,"o":1226.27},{"d":"2023-06-05","n":9558.5738,"o":1227.29},{"d":"2023-06-06","n":9458.7371,"o":1213.72},{"d":"2023-06-07","n":9529.5337,"o":1227.6},{"d":"2023-06-08","n":9560.7657,"o":1227.77},{"d":"2023-06-09","n":9561.1055,"o":1231.56},{"d":"2023-06-12","n":9517.8354,"o":1225.87},{"d":"2023-06-13","n":9616.1255,"o":1245.08},{"d":"2023-06-14","n":9585.3591,"o":1238.09},{"d":"2023-06-15","n":9516.347,"o":1235.36},{"d":"2023-06-16","n":9565.2425,"o":1246.02},{"d":"2023-06-19","n":9486.6486,"o":1231.97},{"d":"2023-06-20","n":9474.6682,"o":1234.07},{"d":"2023-06-21","n":9457.3801,"o":1227.58},{"d":"2023-06-22","n":9406.1665,"o":1208.1},{"d":"2023-06-23","n":9342.4943,"o":1193.99},{"d":"2023-06-26","n":9370.857,"o":1195.7},{"d":"2023-06-27","n":9320.3693,"o":1186.15},{"d":"2023-06-28","n":9422.1427,"o":1198.67},{"d":"2023-06-29","n":9504.367,"o":1210.13},{"d":"2023-06-30","n":9565.9576,"o":1214.12},{"d":"2023-07-03","n":9648.8751,"o":1225.17},{"d":"2023-07-04","n":9637.73,"o":1227.34},{"d":"2023-07-05","n":9589.6861,"o":1216.96},{"d":"2023-07-06","n":9478.063,"o":1198.34},{"d":"2023-07-07","n":9540.5649,"o":1198.96},{"d":"2023-07-10","n":9500.6706,"o":1201.66},{"d":"2023-07-11","n":9488.0749,"o":1205.68},{"d":"2023-07-12","n":9562.3144,"o":1216.21},{"d":"2023-07-13","n":9535.9227,"o":1213.54},{"d":"2023-07-14","n":9412.1074,"o":1201.04},{"d":"2023-07-17","n":9287.2536,"o":1186.39},{"d":"2023-07-18","n":9378.2288,"o":1201.88},{"d":"2023-07-19","n":9397.3339,"o":1209.86},{"d":"2023-07-20","n":9476.7085,"o":1223.29},{"d":"2023-07-21","n":9528.2797,"o":1230.79},{"d":"2023-07-24","n":9530.0225,"o":1237.18},{"d":"2023-07-25","n":9595.0858,"o":1242.7},{"d":"2023-07-26","n":9538.8959,"o":1231.07},{"d":"2023-07-27","n":9593.4794,"o":1239.81},{"d":"2023-07-28","n":9545.1765,"o":1234.57},{"d":"2023-07-31","n":9622.3863,"o":1244.93},{"d":"2023-08-01","n":9676.4218,"o":1245.5},{"d":"2023-08-02","n":9562.1968,"o":1231.51},{"d":"2023-08-03","n":9565.0557,"o":1232.5},{"d":"2023-08-04","n":9637.4838,"o":1242.7},{"d":"2023-08-07","n":9597.574,"o":1234.03},{"d":"2023-08-08","n":9480.2359,"o":1226.28},{"d":"2023-08-09","n":9643.4131,"o":1256.06},{"d":"2023-08-10","n":9617.3728,"o":1255.55},{"d":"2023-08-11","n":9650.3185,"o":1260.92},{"d":"2023-08-14","n":9657.3451,"o":1257.26},{"d":"2023-08-15","n":9623.0193,"o":1252.67},{"d":"2023-08-16","n":9734.3469,"o":1257.11},{"d":"2023-08-17","n":9700.1625,"o":1254.93},{"d":"2023-08-18","n":9573.1352,"o":1237.48},{"d":"2023-08-21","n":9558.3725,"o":1242.16},{"d":"2023-08-22","n":9492.5982,"o":1236.99},{"d":"2023-08-23","n":9448.9405,"o":1229.09},{"d":"2023-08-24","n":9464.5462,"o":1228.37},{"d":"2023-08-25","n":9505.3732,"o":1231.94},{"d":"2023-08-28","n":9599.207,"o":1246.85},{"d":"2023-08-29","n":9608.6458,"o":1247.21},{"d":"2023-08-30","n":9612.6638,"o":1252.12},{"d":"2023-08-31","n":9662.3434,"o":1255.6},{"d":"2023-09-01","n":9696.7129,"o":1265.81},{"d":"2023-09-04","n":9748.0648,"o":1266.79},{"d":"2023-09-05","n":9781.5595,"o":1272.72},{"d":"2023-09-06","n":9722.6549,"o":1269.78},{"d":"2023-09-07","n":9683.859,"o":1262.2},{"d":"2023-09-08","n":9708.1012,"o":1266.34},{"d":"2023-09-11","n":9797.412,"o":1273.99},{"d":"2023-09-12","n":9810.1564,"o":1275.79},{"d":"2023-09-13","n":9768.6898,"o":1273.47},{"d":"2023-09-14","n":9908.4119,"o":1297.2},{"d":"2023-09-15","n":9926.2804,"o":1300.98},{"d":"2023-09-18","n":10004.884,"o":1300.03},{"d":"2023-09-19","n":9995.2206,"o":1301.38},{"d":"2023-09-20","n":10046.4019,"o":1306.18},{"d":"2023-09-21","n":9967.8825,"o":1296.0},{"d":"2023-09-22","n":9943.0502,"o":1299.66},{"d":"2023-09-25","n":9830.5421,"o":1283.59},{"d":"2023-09-26","n":9818.582,"o":1278.97},{"d":"2023-09-27","n":9880.0316,"o":1294.01},{"d":"2023-09-28","n":9852.3411,"o":1289.1},{"d":"2023-09-29","n":9871.386,"o":1290.99},{"d":"2023-10-02","n":9840.8526,"o":1281.21},{"d":"2023-10-03","n":9699.6631,"o":1263.05},{"d":"2023-10-04","n":9601.6076,"o":1247.68},{"d":"2023-10-05","n":9683.8288,"o":1253.05},{"d":"2023-10-06","n":9653.9423,"o":1251.27},{"d":"2023-10-09","n":9770.0519,"o":1280.13},{"d":"2023-10-10","n":9855.6041,"o":1295.77},{"d":"2023-10-11","n":9859.0661,"o":1293.2},{"d":"2023-10-12","n":9936.9147,"o":1308.55},{"d":"2023-10-13","n":9923.6256,"o":1310.84},{"d":"2023-10-16","n":9894.619,"o":1312.0},{"d":"2023-10-17","n":9888.0492,"o":1309.81},{"d":"2023-10-18","n":9903.506,"o":1312.26},{"d":"2023-10-19","n":9791.6848,"o":1291.25},{"d":"2023-10-20","n":9648.1849,"o":1272.14},{"d":"2023-10-23","n":9542.3267,"o":1254.72},{"d":"2023-10-24","n":9655.3472,"o":1264.85},{"d":"2023-10-25","n":9630.5384,"o":1259.14},{"d":"2023-10-26","n":9582.4961,"o":1252.38},{"d":"2023-10-27","n":9677.9745,"o":1263.81},{"d":"2023-10-30","n":9733.5501,"o":1268.48},{"d":"2023-10-31","n":9850.759,"o":1281.02},{"d":"2023-11-01","n":9862.2028,"o":1281.17},{"d":"2023-11-02","n":9904.9381,"o":1291.81},{"d":"2023-11-03","n":9906.7103,"o":1284.91},{"d":"2023-11-06","n":9919.3617,"o":1291.24},{"d":"2023-11-07","n":9746.1257,"o":1264.53},{"d":"2023-11-08","n":9824.9324,"o":1273.74},{"d":"2023-11-09","n":9966.0447,"o":1288.59},{"d":"2023-11-10","n":9904.011,"o":1283.07},{"d":"2023-11-13","n":9928.7622,"o":1293.99},{"d":"2023-11-14","n":10015.4704,"o":1303.08},{"d":"2023-11-15","n":9919.8574,"o":1306.4},{"d":"2023-11-16","n":9742.3286,"o":1282.8},{"d":"2023-11-17","n":9864.0518,"o":1296.28},{"d":"2023-11-20","n":9912.1172,"o":1306.38},{"d":"2023-11-21","n":9809.2659,"o":1288.74},{"d":"2023-11-22","n":9769.5462,"o":1286.3},{"d":"2023-11-23","n":9888.3819,"o":1306.34},{"d":"2023-11-24","n":9948.183,"o":1315.22},{"d":"2023-11-27","n":9933.9555,"o":1311.21},{"d":"2023-11-28","n":9872.9466,"o":1299.85},{"d":"2023-11-29","n":9869.1399,"o":1293.15},{"d":"2023-11-30","n":9916.8352,"o":1303.88},{"d":"2023-12-01","n":9933.5211,"o":1304.37},{"d":"2023-12-04","n":9855.1417,"o":1290.24},{"d":"2023-12-05","n":9868.2636,"o":1292.16},{"d":"2023-12-06","n":9846.2245,"o":1291.25},{"d":"2023-12-07","n":9784.2646,"o":1287.64},{"d":"2023-12-08","n":9855.1489,"o":1294.33},{"d":"2023-12-11","n":9831.6349,"o":1299.18},{"d":"2023-12-12","n":9799.7637,"o":1291.39},{"d":"2023-12-13","n":9767.3842,"o":1289.59},{"d":"2023-12-14","n":9895.5524,"o":1303.97},{"d":"2023-12-15","n":9838.4636,"o":1296.42},{"d":"2023-12-18","n":9982.6888,"o":1309.03},{"d":"2023-12-19","n":9958.5243,"o":1299.63},{"d":"2023-12-20","n":9949.1679,"o":1297.01},{"d":"2023-12-21","n":9920.9192,"o":1292.59},{"d":"2023-12-22","n":9945.3547,"o":1295.42},{"d":"2023-12-25","n":9945.3547,"o":1295.42},{"d":"2023-12-26","n":9945.3547,"o":1295.42},{"d":"2023-12-27","n":10026.88,"o":1307.1},{"d":"2023-12-28","n":10077.4394,"o":1304.4},{"d":"2023-12-29","n":10119.1652,"o":1306.61},{"d":"2024-01-01","n":10119.1652,"o":1306.61},{"d":"2024-01-02","n":10068.5173,"o":1307.06},{"d":"2024-01-03","n":10064.6177,"o":1307.12},{"d":"2024-01-04","n":10183.3461,"o":1323.13},{"d":"2024-01-05","n":10154.187,"o":1317.77},{"d":"2024-01-08","n":10152.1703,"o":1303.96},{"d":"2024-01-09","n":10128.0615,"o":1302.91},{"d":"2024-01-10","n":10121.9033,"o":1297.17},{"d":"2024-01-11","n":10093.1588,"o":1289.74},{"d":"2024-01-12","n":10132.7344,"o":1298.75},{"d":"2024-01-15","n":10059.8237,"o":1286.13},{"d":"2024-01-16","n":10060.7036,"o":1284.38},{"d":"2024-01-17","n":10009.6104,"o":1271.16},{"d":"2024-01-18","n":10050.3804,"o":1276.39},{"d":"2024-01-19","n":10033.0665,"o":1278.01},{"d":"2024-01-22","n":10056.0024,"o":1278.24},{"d":"2024-01-23","n":10079.1998,"o":1284.39},{"d":"2024-01-24","n":10120.0737,"o":1285.95},{"d":"2024-01-25","n":10066.5077,"o":1285.16},{"d":"2024-01-26","n":10116.3608,"o":1293.52},{"d":"2024-01-29","n":10076.7888,"o":1289.58},{"d":"2024-01-30","n":10021.8768,"o":1282.75},{"d":"2024-01-31","n":10056.8128,"o":1278.32},{"d":"2024-02-01","n":10080.7443,"o":1279.3},{"d":"2024-02-02","n":10073.354,"o":1271.69},{"d":"2024-02-05","n":10006.9485,"o":1264.09},{"d":"2024-02-06","n":10108.4854,"o":1273.21},{"d":"2024-02-07","n":9946.2034,"o":1247.17},{"d":"2024-02-08","n":9906.7829,"o":1236.59},{"d":"2024-02-09","n":9880.3609,"o":1240.49},{"d":"2024-02-12","n":9967.1324,"o":1250.87},{"d":"2024-02-13","n":9902.6244,"o":1240.19},{"d":"2024-02-14","n":9922.425,"o":1250.4},{"d":"2024-02-15","n":9923.7998,"o":1252.24},{"d":"2024-02-16","n":10034.0936,"o":1264.02},{"d":"2024-02-19","n":9985.4079,"o":1267.23},{"d":"2024-02-20","n":9921.5625,"o":1262.81},{"d":"2024-02-21","n":9913.661,"o":1260.0},{"d":"2024-02-22","n":9961.1132,"o":1263.58},{"d":"2024-02-23","n":9992.1193,"o":1260.8},{"d":"2024-02-26","n":9964.9908,"o":1262.31},{"d":"2024-02-27","n":9932.5303,"o":1260.06},{"d":"2024-02-28","n":10061.7328,"o":1263.82},{"d":"2024-02-29","n":10145.8525,"o":1266.11},{"d":"2024-03-01","n":10230.9343,"o":1275.14},{"d":"2024-03-04","n":10184.9724,"o":1268.96},{"d":"2024-03-05","n":10178.6401,"o":1275.27},{"d":"2024-03-06","n":10152.8155,"o":1274.04},{"d":"2024-03-07","n":10164.9068,"o":1274.52},{"d":"2024-03-08","n":10225.3263,"o":1279.23},{"d":"2024-03-11","n":10151.9427,"o":1267.61},{"d":"2024-03-12","n":10254.6512,"o":1279.21},{"d":"2024-03-13","n":10324.3064,"o":1291.47},{"d":"2024-03-14","n":10286.7477,"o":1290.84},{"d":"2024-03-15","n":10384.9418,"o":1293.09},{"d":"2024-03-18","n":10407.791,"o":1300.45},{"d":"2024-03-19","n":10425.5199,"o":1302.94},{"d":"2024-03-20","n":10426.6308,"o":1303.74},{"d":"2024-03-21","n":10470.353,"o":1310.55},{"d":"2024-03-22","n":10539.2306,"o":1319.33},{"d":"2024-03-25","n":10526.5245,"o":1323.06},{"d":"2024-03-26","n":10568.5716,"o":1322.36},{"d":"2024-03-27","n":10603.5472,"o":1328.15},{"d":"2024-03-28","n":10603.5472,"o":1328.15},{"d":"2024-03-29","n":10603.5472,"o":1328.15},{"d":"2024-04-01","n":10603.5472,"o":1328.15},{"d":"2024-04-02","n":10674.4636,"o":1342.78},{"d":"2024-04-03","n":10706.4843,"o":1349.28},{"d":"2024-04-04","n":10766.3892,"o":1349.62},{"d":"2024-04-05","n":10790.3155,"o":1351.5},{"d":"2024-04-08","n":10792.3996,"o":1350.9},{"d":"2024-04-09","n":10828.89,"o":1352.65},{"d":"2024-04-10","n":10859.6993,"o":1357.06},{"d":"2024-04-11","n":10814.5692,"o":1355.28},{"d":"2024-04-12","n":10945.006,"o":1376.17},{"d":"2024-04-15","n":10864.3853,"o":1361.91},{"d":"2024-04-16","n":10767.1615,"o":1343.16},{"d":"2024-04-17","n":10787.0774,"o":1347.78},{"d":"2024-04-18","n":10763.5997,"o":1342.62},{"d":"2024-04-19","n":10766.8841,"o":1341.22},{"d":"2024-04-22","n":10801.2102,"o":1340.25},{"d":"2024-04-23","n":10802.0157,"o":1339.8},{"d":"2024-04-24","n":10904.7367,"o":1353.28},{"d":"2024-04-25","n":10950.9597,"o":1358.86},{"d":"2024-04-26","n":10990.645,"o":1365.93},{"d":"2024-04-29","n":11008.5083,"o":1367.92},{"d":"2024-04-30","n":11046.0198,"o":1371.21},{"d":"2024-05-01","n":11046.0198,"o":1371.21},{"d":"2024-05-02","n":10959.6546,"o":1364.5},{"d":"2024-05-03","n":10957.5332,"o":1371.3},{"d":"2024-05-06","n":11064.6085,"o":1390.11},{"d":"2024-05-07","n":11119.6807,"o":1394.15},{"d":"2024-05-08","n":11218.0624,"o":1398.27},{"d":"2024-05-09","n":11218.0624,"o":1398.27},{"d":"2024-05-10","n":11344.7473,"o":1418.73},{"d":"2024-05-13","n":11356.1851,"o":1416.45},{"d":"2024-05-14","n":11308.0947,"o":1417.0},{"d":"2024-05-15","n":11295.3704,"o":1409.06},{"d":"2024-05-16","n":11340.4201,"o":1416.42},{"d":"2024-05-17","n":11340.4201,"o":1416.42},{"d":"2024-05-20","n":11340.4201,"o":1416.42},{"d":"2024-05-21","n":11340.0482,"o":1424.56},{"d":"2024-05-22","n":11269.3623,"o":1418.31},{"d":"2024-05-23","n":11305.7817,"o":1424.98},{"d":"2024-05-24","n":11336.1118,"o":1423.46},{"d":"2024-05-27","n":11407.3429,"o":1434.2},{"d":"2024-05-28","n":11378.1269,"o":1433.82},{"d":"2024-05-29","n":11298.2186,"o":1423.64},{"d":"2024-05-30","n":11372.4674,"o":1428.1},{"d":"2024-05-31","n":11423.7337,"o":1440.53},{"d":"2024-06-03","n":11402.7556,"o":1442.35},{"d":"2024-06-04","n":11194.086,"o":1415.1},{"d":"2024-06-05","n":11154.3107,"o":1413.36},{"d":"2024-06-06","n":11189.1509,"o":1416.83},{"d":"2024-06-07","n":11184.6541,"o":1423.28},{"d":"2024-06-10","n":11144.3388,"o":1419.29},{"d":"2024-06-11","n":11035.7336,"o":1407.23},{"d":"2024-06-12","n":11116.6063,"o":1414.25},{"d":"2024-06-13","n":11014.9025,"o":1400.14},{"d":"2024-06-14","n":10978.0543,"o":1391.56},{"d":"2024-06-17","n":11055.3654,"o":1393.52},{"d":"2024-06-18","n":11099.1475,"o":1403.06},{"d":"2024-06-19","n":11071.8024,"o":1404.23},{"d":"2024-06-20","n":11090.0821,"o":1409.34},{"d":"2024-06-21","n":11099.4344,"o":1406.98},{"d":"2024-06-24","n":11175.3085,"o":1417.06},{"d":"2024-06-25","n":11132.0029,"o":1410.46},{"d":"2024-06-26","n":11091.1472,"o":1409.24},{"d":"2024-06-27","n":11141.0818,"o":1415.84},{"d":"2024-06-28","n":11188.6782,"o":1422.35},{"d":"2024-07-01","n":11193.106,"o":1428.29},{"d":"2024-07-02","n":11237.0218,"o":1427.64},{"d":"2024-07-03","n":11221.0882,"o":1428.23},{"d":"2024-07-04","n":11225.238,"o":1425.84},{"d":"2024-07-05","n":11192.9144,"o":1418.82},{"d":"2024-07-08","n":11149.4403,"o":1409.3},{"d":"2024-07-09","n":11062.6971,"o":1401.33},{"d":"2024-07-10","n":11061.6551,"o":1406.03},{"d":"2024-07-11","n":11054.8829,"o":1415.32},{"d":"2024-07-12","n":11192.878,"o":1434.43},{"d":"2024-07-15","n":11200.3653,"o":1427.41},{"d":"2024-07-16","n":11181.7058,"o":1425.29},{"d":"2024-07-17","n":11255.451,"o":1431.74},{"d":"2024-07-18","n":11341.6051,"o":1443.71},{"d":"2024-07-19","n":11392.3493,"o":1443.02},{"d":"2024-07-22","n":11423.9908,"o":1452.54},{"d":"2024-07-23","n":11391.5977,"o":1446.85},{"d":"2024-07-24","n":11378.7288,"o":1440.21},{"d":"2024-07-25","n":11336.176,"o":1429.04},{"d":"2024-07-26","n":11372.7156,"o":1434.12},{"d":"2024-07-29","n":11433.3426,"o":1445.27},{"d":"2024-07-30","n":11425.9472,"o":1443.96},{"d":"2024-07-31","n":11511.818,"o":1459.29},{"d":"2024-08-01","n":11468.2516,"o":1451.57},{"d":"2024-08-02","n":11197.2003,"o":1408.88},{"d":"2024-08-05","n":10822.5238,"o":1361.58},{"d":"2024-08-06","n":10919.9391,"o":1374.22},{"d":"2024-08-07","n":11112.2932,"o":1401.05},{"d":"2024-08-08","n":11128.801,"o":1402.52},{"d":"2024-08-09","n":11166.0501,"o":1412.91},{"d":"2024-08-12","n":11258.4097,"o":1427.52},{"d":"2024-08-13","n":11301.3104,"o":1427.65},{"d":"2024-08-14","n":11355.2611,"o":1437.29},{"d":"2024-08-15","n":11397.5379,"o":1438.37},{"d":"2024-08-16","n":11399.1767,"o":1442.82},{"d":"2024-08-19","n":11448.3898,"o":1448.6},{"d":"2024-08-20","n":11280.5668,"o":1428.69},{"d":"2024-08-21","n":11349.6229,"o":1425.94},{"d":"2024-08-22","n":11363.8185,"o":1424.87},{"d":"2024-08-23","n":11423.5769,"o":1434.48},{"d":"2024-08-26","n":11502.407,"o":1443.61},{"d":"2024-08-27","n":11471.1802,"o":1438.26},{"d":"2024-08-28","n":11406.1976,"o":1431.22},{"d":"2024-08-29","n":11379.6087,"o":1432.52},{"d":"2024-08-30","n":11431.8953,"o":1439.44},{"d":"2024-09-02","n":11332.8735,"o":1428.96},{"d":"2024-09-03","n":11095.3241,"o":1397.48},{"d":"2024-09-04","n":11113.9931,"o":1397.16},{"d":"2024-09-05","n":11098.4575,"o":1393.79},{"d":"2024-09-06","n":11041.0947,"o":1385.94},{"d":"2024-09-09","n":11100.4824,"o":1392.67},{"d":"2024-09-10","n":10979.5722,"o":1379.27},{"d":"2024-09-11","n":11027.9526,"o":1381.37},{"d":"2024-09-12","n":11075.2489,"o":1394.8},{"d":"2024-09-13","n":11198.6181,"o":1407.41},{"d":"2024-09-16","n":11215.3259,"o":1410.9},{"d":"2024-09-17","n":11228.5123,"o":1404.8},{"d":"2024-09-18","n":11201.2055,"o":1400.41},{"d":"2024-09-19","n":11264.6934,"o":1411.02},{"d":"2024-09-20","n":11243.9685,"o":1407.43},{"d":"2024-09-23","n":11264.2965,"o":1412.29},{"d":"2024-09-24","n":11250.3286,"o":1412.36},{"d":"2024-09-25","n":11192.4112,"o":1404.42},{"d":"2024-09-26","n":11166.4489,"o":1393.83},{"d":"2024-09-27","n":11254.3289,"o":1406.93},{"d":"2024-09-30","n":11333.4319,"o":1416.3},{"d":"2024-10-01","n":11377.9485,"o":1424.67},{"d":"2024-10-02","n":11400.1958,"o":1437.67},{"d":"2024-10-03","n":11417.3098,"o":1436.15},{"d":"2024-10-04","n":11550.248,"o":1449.45},{"d":"2024-10-07","n":11508.4565,"o":1442.48},{"d":"2024-10-08","n":11381.376,"o":1424.05},{"d":"2024-10-09","n":11497.6459,"o":1431.66},{"d":"2024-10-10","n":11618.1781,"o":1443.63},{"d":"2024-10-11","n":11661.6483,"o":1449.34},{"d":"2024-10-14","n":11612.3948,"o":1450.21},{"d":"2024-10-15","n":11555.5897,"o":1438.27},{"d":"2024-10-16","n":11569.5083,"o":1441.83},{"d":"2024-10-17","n":11601.8819,"o":1443.94},{"d":"2024-10-18","n":11532.4841,"o":1433.62},{"d":"2024-10-21","n":11604.5641,"o":1438.55},{"d":"2024-10-22","n":11594.0619,"o":1444.02},{"d":"2024-10-23","n":11597.3682,"o":1439.93},{"d":"2024-10-24","n":11638.727,"o":1446.48},{"d":"2024-10-25","n":11714.4095,"o":1461.21},{"d":"2024-10-28","n":11679.3806,"o":1449.88},{"d":"2024-10-29","n":11628.9744,"o":1449.39},{"d":"2024-10-30","n":11579.1897,"o":1449.57},{"d":"2024-10-31","n":11424.9094,"o":1431.41},{"d":"2024-11-01","n":11399.1663,"o":1433.2},{"d":"2024-11-04","n":11353.5433,"o":1426.69},{"d":"2024-11-05","n":11394.3636,"o":1432.66},{"d":"2024-11-06","n":11327.5027,"o":1414.43},{"d":"2024-11-07","n":11398.8038,"o":1421.23},{"d":"2024-11-08","n":11356.8314,"o":1416.42},{"d":"2024-11-11","n":11395.8044,"o":1419.61},{"d":"2024-11-12","n":11294.8163,"o":1411.19},{"d":"2024-11-13","n":11185.1431,"o":1402.42},{"d":"2024-11-14","n":11278.2104,"o":1426.26},{"d":"2024-11-15","n":11419.4799,"o":1445.01},{"d":"2024-11-18","n":11402.369,"o":1441.81},{"d":"2024-11-19","n":11329.4071,"o":1442.97},{"d":"2024-11-20","n":11460.5905,"o":1452.15},{"d":"2024-11-21","n":11515.0167,"o":1464.83},{"d":"2024-11-22","n":11594.4043,"o":1468.66},{"d":"2024-11-25","n":11630.8822,"o":1471.7},{"d":"2024-11-26","n":11443.1689,"o":1452.05},{"d":"2024-11-27","n":11480.5968,"o":1457.03},{"d":"2024-11-28","n":11497.3541,"o":1456.97},{"d":"2024-11-29","n":11458.7904,"o":1454.21},{"d":"2024-12-02","n":11452.8977,"o":1454.77},{"d":"2024-12-03","n":11552.2754,"o":1469.43},{"d":"2024-12-04","n":11623.5888,"o":1472.91},{"d":"2024-12-05","n":11661.1109,"o":1472.08},{"d":"2024-12-06","n":11538.3857,"o":1449.58},{"d":"2024-12-09","n":11606.3835,"o":1454.92},{"d":"2024-12-10","n":11511.7456,"o":1447.17},{"d":"2024-12-11","n":11538.4308,"o":1447.7},{"d":"2024-12-12","n":11581.6213,"o":1448.52},{"d":"2024-12-13","n":11606.5459,"o":1445.87},{"d":"2024-12-16","n":11490.1205,"o":1429.9},{"d":"2024-12-17","n":11346.0616,"o":1417.55},{"d":"2024-12-18","n":11314.5842,"o":1414.24},{"d":"2024-12-19","n":11269.0825,"o":1406.06},{"d":"2024-12-20","n":11245.655,"o":1400.54},{"d":"2024-12-23","n":11310.1784,"o":1408.0},{"d":"2024-12-24","n":11310.1784,"o":1408.0},{"d":"2024-12-25","n":11310.1784,"o":1408.0},{"d":"2024-12-26","n":11310.1784,"o":1408.0},{"d":"2024-12-27","n":11424.7531,"o":1425.1},{"d":"2024-12-30","n":11468.6735,"o":1425.05},{"d":"2024-12-31","n":11468.5826,"o":1425.05},{"d":"2025-01-01","n":11468.5826,"o":1425.05},{"d":"2025-01-02","n":11606.7646,"o":1458.15},{"d":"2025-01-03","n":11621.7917,"o":1462.48},{"d":"2025-01-06","n":11597.2412,"o":1461.23},{"d":"2025-01-07","n":11605.2052,"o":1469.54},{"d":"2025-01-08","n":11613.3509,"o":1466.56},{"d":"2025-01-09","n":11765.6905,"o":1472.83},{"d":"2025-01-10","n":11780.7963,"o":1479.81},{"d":"2025-01-13","n":11767.0061,"o":1479.15},{"d":"2025-01-14","n":11831.768,"o":1477.47},{"d":"2025-01-15","n":11940.918,"o":1491.02},{"d":"2025-01-16","n":11918.0892,"o":1486.03},{"d":"2025-01-17","n":11923.165,"o":1493.65},{"d":"2025-01-20","n":11911.7992,"o":1491.21},{"d":"2025-01-21","n":11903.7209,"o":1485.35},{"d":"2025-01-22","n":11928.671,"o":1489.35},{"d":"2025-01-23","n":12010.0086,"o":1503.03},{"d":"2025-01-24","n":11944.1683,"o":1489.14},{"d":"2025-01-27","n":12031.275,"o":1491.68},{"d":"2025-01-28","n":12137.6117,"o":1498.11},{"d":"2025-01-29","n":12213.8082,"o":1510.49},{"d":"2025-01-30","n":12289.207,"o":1522.22},{"d":"2025-01-31","n":12218.388,"o":1515.46},{"d":"2025-02-03","n":12008.5301,"o":1498.83},{"d":"2025-02-04","n":12074.7571,"o":1510.13},{"d":"2025-02-05","n":12012.1543,"o":1502.11},{"d":"2025-02-06","n":12008.7336,"o":1499.25},{"d":"2025-02-07","n":11932.0308,"o":1485.1},{"d":"2025-02-10","n":11964.4694,"o":1487.44},{"d":"2025-02-11","n":12086.0024,"o":1505.01},{"d":"2025-02-12","n":11913.6518,"o":1481.21},{"d":"2025-02-13","n":11939.5315,"o":1482.34},{"d":"2025-02-14","n":11952.9905,"o":1488.2},{"d":"2025-02-17","n":11983.3392,"o":1491.36},{"d":"2025-02-18","n":11934.2991,"o":1491.05},{"d":"2025-02-19","n":11905.0694,"o":1497.79},{"d":"2025-02-20","n":11823.778,"o":1493.34},{"d":"2025-02-21","n":11860.3747,"o":1500.24},{"d":"2025-02-24","n":11883.3815,"o":1498.18},{"d":"2025-02-25","n":11910.0801,"o":1493.55},{"d":"2025-02-26","n":11923.6545,"o":1501.64},{"d":"2025-02-27","n":11838.7294,"o":1492.91},{"d":"2025-02-28","n":11785.3769,"o":1489.65},{"d":"2025-03-03","n":11748.7956,"o":1507.41},{"d":"2025-03-04","n":11407.8738,"o":1462.3},{"d":"2025-03-05","n":11486.8711,"o":1472.75},{"d":"2025-03-06","n":11494.3119,"o":1476.13},{"d":"2025-03-07","n":11600.0957,"o":1490.91},{"d":"2025-03-10","n":11540.7539,"o":1486.21},{"d":"2025-03-11","n":11444.4337,"o":1475.69},{"d":"2025-03-12","n":11451.0292,"o":1471.21},{"d":"2025-03-13","n":11558.5254,"o":1493.27},{"d":"2025-03-14","n":11670.9409,"o":1504.51},{"d":"2025-03-17","n":11788.2648,"o":1523.81},{"d":"2025-03-18","n":11882.9629,"o":1532.87},{"d":"2025-03-19","n":11963.9649,"o":1544.01},{"d":"2025-03-20","n":11940.6591,"o":1539.5},{"d":"2025-03-21","n":11917.1272,"o":1534.35},{"d":"2025-03-24","n":11868.4868,"o":1530.81},{"d":"2025-03-25","n":11890.5253,"o":1534.72},{"d":"2025-03-26","n":11978.3202,"o":1542.58},{"d":"2025-03-27","n":11895.0159,"o":1534.3},{"d":"2025-03-28","n":11729.2887,"o":1513.98},{"d":"2025-03-31","n":11705.3258,"o":1516.52},{"d":"2025-04-01","n":11692.5057,"o":1518.11},{"d":"2025-04-02","n":11567.1681,"o":1500.3},{"d":"2025-04-03","n":11276.0938,"o":1469.7},{"d":"2025-04-04","n":10812.5879,"o":1396.13},{"d":"2025-04-07","n":10747.0751,"o":1390.09},{"d":"2025-04-08","n":10830.211,"o":1401.52},{"d":"2025-04-09","n":10579.7514,"o":1362.84},{"d":"2025-04-10","n":10807.9561,"o":1401.51},{"d":"2025-04-11","n":10892.4726,"o":1407.76},{"d":"2025-04-14","n":11062.2642,"o":1434.74},{"d":"2025-04-15","n":11140.2815,"o":1446.78},{"d":"2025-04-16","n":11123.6531,"o":1447.47},{"d":"2025-04-17","n":11123.6531,"o":1447.47},{"d":"2025-04-18","n":11123.6531,"o":1447.47},{"d":"2025-04-21","n":11123.6531,"o":1447.47},{"d":"2025-04-22","n":11092.7301,"o":1437.37},{"d":"2025-04-23","n":11316.9859,"o":1453.91},{"d":"2025-04-24","n":11279.1455,"o":1452.23},{"d":"2025-04-25","n":11304.7775,"o":1456.43},{"d":"2025-04-28","n":11424.6784,"o":1467.54},{"d":"2025-04-29","n":11496.8669,"o":1472.35},{"d":"2025-04-30","n":11545.213,"o":1487.07},{"d":"2025-05-01","n":11545.213,"o":1487.07},{"d":"2025-05-02","n":11736.7125,"o":1510.15},{"d":"2025-05-05","n":11746.62,"o":1514.89},{"d":"2025-05-06","n":11685.9121,"o":1508.97},{"d":"2025-05-07","n":11692.1395,"o":1512.95},{"d":"2025-05-08","n":11693.3216,"o":1514.11},{"d":"2025-05-09","n":11739.8188,"o":1505.35},{"d":"2025-05-12","n":11915.1229,"o":1520.32},{"d":"2025-05-13","n":11927.0816,"o":1525.55},{"d":"2025-05-14","n":12040.1384,"o":1535.09},{"d":"2025-05-15","n":12121.46,"o":1547.17},{"d":"2025-05-16","n":12196.4829,"o":1565.56},{"d":"2025-05-19","n":12116.9083,"o":1558.73},{"d":"2025-05-20","n":12091.7201,"o":1561.46},{"d":"2025-05-21","n":12171.0818,"o":1569.15},{"d":"2025-05-22","n":12024.5115,"o":1546.79},{"d":"2025-05-23","n":12077.9421,"o":1549.67},{"d":"2025-05-26","n":12150.7072,"o":1564.87},{"d":"2025-05-27","n":12184.3938,"o":1574.52},{"d":"2025-05-28","n":12127.4019,"o":1564.95},{"d":"2025-05-29","n":12127.4019,"o":1564.95},{"d":"2025-05-30","n":12150.6795,"o":1561.61},{"d":"2025-06-02","n":12211.1479,"o":1569.64},{"d":"2025-06-03","n":12141.752,"o":1569.53},{"d":"2025-06-04","n":12291.3674,"o":1579.39},{"d":"2025-06-05","n":12247.1785,"o":1583.01},{"d":"2025-06-06","n":12358.315,"o":1584.61},{"d":"2025-06-09","n":12358.315,"o":1584.61},{"d":"2025-06-10","n":12458.5374,"o":1600.91},{"d":"2025-06-11","n":12498.8402,"o":1610.88},{"d":"2025-06-12","n":12496.8975,"o":1616.14},{"d":"2025-06-13","n":12522.2514,"o":1627.37},{"d":"2025-06-16","n":12547.8382,"o":1633.46},{"d":"2025-06-17","n":12524.2645,"o":1636.76},{"d":"2025-06-18","n":12489.9686,"o":1637.65},{"d":"2025-06-19","n":12538.3606,"o":1645.14},{"d":"2025-06-20","n":12544.6348,"o":1643.85},{"d":"2025-06-23","n":12524.8473,"o":1633.13},{"d":"2025-06-24","n":12464.0846,"o":1605.68},{"d":"2025-06-25","n":12509.6047,"o":1600.55},{"d":"2025-06-26","n":12481.8826,"o":1597.57},{"d":"2025-06-27","n":12581.0846,"o":1607.73},{"d":"2025-06-30","n":12663.0173,"o":1621.29},{"d":"2025-07-01","n":12593.4949,"o":1608.3},{"d":"2025-07-02","n":12763.2688,"o":1619.37},{"d":"2025-07-03","n":12834.0375,"o":1629.27},{"d":"2025-07-04","n":12837.1633,"o":1631.88},{"d":"2025-07-07","n":12838.2086,"o":1633.51},{"d":"2025-07-08","n":12835.1251,"o":1633.8},{"d":"2025-07-09","n":12884.4578,"o":1621.64},{"d":"2025-07-10","n":12856.8401,"o":1632.43},{"d":"2025-07-11","n":12794.1003,"o":1627.14},{"d":"2025-07-14","n":12885.1548,"o":1628.78},{"d":"2025-07-15","n":12895.8386,"o":1624.67},{"d":"2025-07-16","n":12827.79,"o":1609.63},{"d":"2025-07-17","n":12825.8603,"o":1610.4},{"d":"2025-07-18","n":12810.9008,"o":1616.92},{"d":"2025-07-21","n":12777.8163,"o":1608.18},{"d":"2025-07-22","n":12821.3204,"o":1612.43},{"d":"2025-07-23","n":12918.6605,"o":1614.08},{"d":"2025-07-24","n":13017.7419,"o":1624.96},{"d":"2025-07-25","n":12905.9309,"o":1614.53},{"d":"2025-07-28","n":12958.5363,"o":1625.05},{"d":"2025-07-29","n":12965.8255,"o":1633.47},{"d":"2025-07-30","n":12865.2799,"o":1621.45},{"d":"2025-07-31","n":12851.4958,"o":1625.25},{"d":"2025-08-01","n":12749.0568,"o":1605.43},{"d":"2025-08-04","n":12832.9285,"o":1616.5},{"d":"2025-08-05","n":12883.1217,"o":1623.18},{"d":"2025-08-06","n":12889.8375,"o":1624.55},{"d":"2025-08-07","n":12906.359,"o":1621.7},{"d":"2025-08-08","n":12934.1958,"o":1622.72},{"d":"2025-08-11","n":12841.4342,"o":1611.97},{"d":"2025-08-12","n":13015.0465,"o":1623.67},{"d":"2025-08-13","n":12972.1399,"o":1626.56},{"d":"2025-08-14","n":12922.591,"o":1630.9},{"d":"2025-08-15","n":12989.3576,"o":1634.23},{"d":"2025-08-18","n":12971.3945,"o":1632.69},{"d":"2025-08-19","n":13056.9469,"o":1635.64},{"d":"2025-08-20","n":13069.3807,"o":1644.9},{"d":"2025-08-21","n":13129.1355,"o":1657.37},{"d":"2025-08-22","n":13142.5693,"o":1664.42},{"d":"2025-08-25","n":13159.4578,"o":1661.86},{"d":"2025-08-26","n":13137.1286,"o":1659.54},{"d":"2025-08-27","n":12988.9155,"o":1646.08},{"d":"2025-08-28","n":12949.7218,"o":1636.18},{"d":"2025-08-29","n":13050.3931,"o":1646.47},{"d":"2025-09-01","n":12979.7741,"o":1647.12},{"d":"2025-09-02","n":12866.4707,"o":1632.74},{"d":"2025-09-03","n":12791.3535,"o":1619.0},{"d":"2025-09-04","n":12876.1586,"o":1629.72},{"d":"2025-09-05","n":12844.9723,"o":1625.88},{"d":"2025-09-08","n":12898.3519,"o":1632.64},{"d":"2025-09-09","n":12969.8025,"o":1641.09},{"d":"2025-09-10","n":13025.6535,"o":1653.18},{"d":"2025-09-11","n":13053.1238,"o":1652.98},{"d":"2025-09-12","n":13067.7672,"o":1654.62},{"d":"2025-09-15","n":13214.4359,"o":1664.18},{"d":"2025-09-16","n":13149.4206,"o":1657.19},{"d":"2025-09-17","n":13123.18,"o":1650.53},{"d":"2025-09-18","n":13166.0723,"o":1651.25},{"d":"2025-09-19","n":13083.3132,"o":1645.65},{"d":"2025-09-22","n":13015.2835,"o":1641.51},{"d":"2025-09-23","n":13095.8763,"o":1655.91},{"d":"2025-09-24","n":13105.9589,"o":1662.61},{"d":"2025-09-25","n":13035.6892,"o":1655.92},{"d":"2025-09-26","n":13076.6126,"o":1662.43},{"d":"2025-09-29","n":13050.2047,"o":1657.67},{"d":"2025-09-30","n":12986.7089,"o":1644.57},{"d":"2025-10-01","n":13093.5476,"o":1657.71},{"d":"2025-10-02","n":12957.0595,"o":1650.48},{"d":"2025-10-03","n":12988.6025,"o":1659.31},{"d":"2025-10-06","n":13050.2533,"o":1668.04},{"d":"2025-10-07","n":12999.2805,"o":1649.49},{"d":"2025-10-08","n":13030.7329,"o":1652.36},{"d":"2025-10-09","n":13064.7904,"o":1653.12},{"d":"2025-10-10","n":13071.1377,"o":1650.86},{"d":"2025-10-13","n":13020.2303,"o":1638.62},{"d":"2025-10-14","n":12997.4262,"o":1632.14},{"d":"2025-10-15","n":13172.5396,"o":1643.17},{"d":"2025-10-16","n":13175.2575,"o":1643.87},{"d":"2025-10-17","n":13114.4066,"o":1623.18},{"d":"2025-10-20","n":13159.0034,"o":1628.46},{"d":"2025-10-21","n":13124.0046,"o":1632.15},{"d":"2025-10-22","n":13153.1829,"o":1627.71},{"d":"2025-10-23","n":13244.4247,"o":1652.59},{"d":"2025-10-24","n":13151.0985,"o":1642.83},{"d":"2025-10-27","n":13156.0547,"o":1646.78},{"d":"2025-10-28","n":13087.1965,"o":1638.19},{"d":"2025-10-29","n":13182.1598,"o":1639.8},{"d":"2025-10-30","n":13040.2791,"o":1607.59},{"d":"2025-10-31","n":13008.2639,"o":1611.8},{"d":"2025-11-03","n":13052.365,"o":1619.26},{"d":"2025-11-04","n":12943.4726,"o":1606.91},{"d":"2025-11-05","n":12975.3919,"o":1609.67},{"d":"2025-11-06","n":12914.2149,"o":1603.62},{"d":"2025-11-07","n":12880.5883,"o":1599.21},{"d":"2025-11-10","n":12950.4061,"o":1607.11},{"d":"2025-11-11","n":13046.3973,"o":1616.91},{"d":"2025-11-12","n":13087.6153,"o":1622.41},{"d":"2025-11-13","n":13110.4183,"o":1623.58},{"d":"2025-11-14","n":13025.6254,"o":1614.79},{"d":"2025-11-17","n":13064.4422,"o":1619.15},{"d":"2025-11-18","n":12840.107,"o":1585.79},{"d":"2025-11-19","n":12938.7723,"o":1583.83},{"d":"2025-11-20","n":13040.7925,"o":1601.78},{"d":"2025-11-21","n":12963.7808,"o":1583.67},{"d":"2025-11-24","n":12979.1187,"o":1581.82},{"d":"2025-11-25","n":13071.9828,"o":1585.53},{"d":"2025-11-26","n":13146.6814,"o":1596.82},{"d":"2025-11-27","n":13224.3957,"o":1608.34},{"d":"2025-11-28","n":13241.8715,"o":1609.67},{"d":"2025-12-01","n":13222.9316,"o":1605.87},{"d":"2025-12-02","n":13239.5387,"o":1605.3},{"d":"2025-12-03","n":13335.3157,"o":1616.0},{"d":"2025-12-04","n":13386.716,"o":1625.29},{"d":"2025-12-05","n":13455.3046,"o":1632.45},{"d":"2025-12-08","n":13519.7756,"o":1640.22},{"d":"2025-12-09","n":13456.7008,"o":1638.15},{"d":"2025-12-10","n":13465.1738,"o":1628.34},{"d":"2025-12-11","n":13534.0006,"o":1641.11},{"d":"2025-12-12","n":13545.2469,"o":1642.81},{"d":"2025-12-15","n":13619.108,"o":1647.08},{"d":"2025-12-16","n":13580.8468,"o":1635.99},{"d":"2025-12-17","n":13671.6392,"o":1649.54},{"d":"2025-12-18","n":13663.7999,"o":1649.68},{"d":"2025-12-19","n":13801.5627,"o":1660.14},{"d":"2025-12-22","n":13837.6972,"o":1662.43},{"d":"2025-12-23","n":13875.3607,"o":1666.51},{"d":"2025-12-24","n":13875.3607,"o":1666.51},{"d":"2025-12-25","n":13875.3607,"o":1666.51},{"d":"2025-12-26","n":13875.3607,"o":1666.51},{"d":"2025-12-29","n":13971.4535,"o":1676.17},{"d":"2025-12-30","n":14087.4161,"o":1687.77},{"d":"2025-12-31","n":14087.818,"o":1687.77},{"d":"2026-01-01","n":14087.818,"o":1687.77},{"d":"2026-01-02","n":14059.3284,"o":1696.95},{"d":"2026-01-05","n":13907.7104,"o":1686.98},{"d":"2026-01-06","n":13938.7194,"o":1697.89},{"d":"2026-01-07","n":13866.224,"o":1681.32},{"d":"2026-01-08","n":13849.5818,"o":1683.91},{"d":"2026-01-09","n":13814.4438,"o":1697.17},{"d":"2026-01-12","n":13850.23,"o":1703.65},{"d":"2026-01-13","n":13989.7854,"o":1717.28},{"d":"2026-01-14","n":14049.7543,"o":1729.23},{"d":"2026-01-15","n":14124.9308,"o":1731.49},{"d":"2026-01-16","n":14126.2329,"o":1750.9},{"d":"2026-01-19","n":13851.6182,"o":1721.71},{"d":"2026-01-20","n":13853.599,"o":1724.87},{"d":"2026-01-21","n":13854.1983,"o":1731.94},{"d":"2026-01-22","n":13928.5044,"o":1725.2},{"d":"2026-01-23","n":13947.6397,"o":1733.38},{"d":"2026-01-26","n":13955.857,"o":1736.76},{"d":"2026-01-27","n":13997.1654,"o":1742.8},{"d":"2026-01-28","n":14003.2383,"o":1749.57},{"d":"2026-01-29","n":14056.975,"o":1756.57},{"d":"2026-01-30","n":14110.8853,"o":1760.38},{"d":"2026-02-02","n":14086.4126,"o":1757.17},{"d":"2026-02-03","n":14167.8159,"o":1759.71},{"d":"2026-02-04","n":14103.4632,"o":1765.77},{"d":"2026-02-05","n":14134.7745,"o":1767.03},{"d":"2026-02-06","n":14321.0929,"o":1816.11},{"d":"2026-02-09","n":14338.1452,"o":1823.3},{"d":"2026-02-10","n":14395.1081,"o":1825.59},{"d":"2026-02-11","n":14382.4108,"o":1828.17},{"d":"2026-02-12","n":14470.6145,"o":1838.06},{"d":"2026-02-13","n":14358.8009,"o":1822.94},{"d":"2026-02-16","n":14441.618,"o":1827.51},{"d":"2026-02-17","n":14504.4459,"o":1820.66},{"d":"2026-02-18","n":14680.2258,"o":1858.76},{"d":"2026-02-19","n":14740.5471,"o":1870.56},{"d":"2026-02-20","n":14938.9417,"o":1884.15},{"d":"2026-02-23","n":14832.7023,"o":1875.29},{"d":"2026-02-24","n":14890.0987,"o":1877.2},{"d":"2026-02-25","n":14977.2475,"o":1882.58},{"d":"2026-02-26","n":14935.8144,"o":1875.3},{"d":"2026-02-27","n":15037.586,"o":1892.04},{"d":"2026-03-02","n":14989.1407,"o":1914.86},{"d":"2026-03-03","n":14726.5433,"o":1887.45},{"d":"2026-03-04","n":14917.859,"o":1908.06},{"d":"2026-03-05","n":14951.1925,"o":1905.71},{"d":"2026-03-06","n":14856.6082,"o":1904.18},{"d":"2026-03-09","n":14790.5067,"o":1910.1},{"d":"2026-03-10","n":14856.6863,"o":1905.68},{"d":"2026-03-11","n":14925.9091,"o":1914.28},{"d":"2026-03-12","n":15052.6041,"o":1937.55},{"d":"2026-03-13","n":15077.4036,"o":1945.95},{"d":"2026-03-16","n":15142.6123,"o":1966.63},{"d":"2026-03-17","n":15140.5774,"o":1972.42},{"d":"2026-03-18","n":15200.0666,"o":1986.11},{"d":"2026-03-19","n":15032.6226,"o":1998.47},{"d":"2026-03-20","n":14863.5519,"o":1966.5},{"d":"2026-03-23","n":14715.4702,"o":1948.83},{"d":"2026-03-24","n":14794.724,"o":1956.18},{"d":"2026-03-25","n":14967.7814,"o":1980.05},{"d":"2026-03-26","n":15053.1626,"o":1988.05},{"d":"2026-03-27","n":14940.2247,"o":1981.56},{"d":"2026-03-30","n":15266.9754,"o":2037.84},{"d":"2026-03-31","n":15444.3645,"o":2067.97},{"d":"2026-04-01","n":15407.1084,"o":2053.05},{"d":"2026-04-02","n":15407.1084,"o":2053.05},{"d":"2026-04-03","n":15407.1084,"o":2053.05},{"d":"2026-04-06","n":15407.1084,"o":2053.05},{"d":"2026-04-07","n":15545.134,"o":2080.56},{"d":"2026-04-08","n":15464.5421,"o":2022.97},{"d":"2026-04-09","n":15616.7163,"o":2060.64},{"d":"2026-04-10","n":15552.9231,"o":2043.61},{"d":"2026-04-13","n":15533.7468,"o":2048.99},{"d":"2026-04-14","n":15521.4316,"o":2032.97},{"d":"2026-04-15","n":15426.0922,"o":2019.49},{"d":"2026-04-16","n":15419.2328,"o":2017.43},{"d":"2026-04-17","n":15181.1822,"o":1968.36},{"d":"2026-04-20","n":15265.9509,"o":1980.01},{"d":"2026-04-21","n":15280.1394,"o":1993.14},{"d":"2026-04-22","n":15291.641,"o":1997.57},{"d":"2026-04-23","n":15215.5961,"o":2003.83},{"d":"2026-04-24","n":15238.3898,"o":1994.27},{"d":"2026-04-27","n":15182.7415,"o":1986.63},{"d":"2026-04-28","n":15296.3311,"o":1993.31}];
+let navSeries = [...EMBEDDED_NAV];
+
+// ═══════════════════════════════════════════════
+// TRANSACTIONS
+// ═══════════════════════════════════════════════
+const PAN_TX = [
+  {date:'2021-12-20',units:1.1556, nav:8644.8685,amount:10000},
+  {date:'2022-01-18',units:1.0567, nav:9453.9699,amount:10000},
+  {date:'2022-02-03',units:3.2701, nav:9164.9865,amount:30000},
+  {date:'2022-05-06',units:0.9345, nav:9621.9985,amount:9000},
+  {date:'2022-06-22',units:11.0953,nav:9003.8214,amount:100000},
+  {date:'2022-09-08',units:11.3437,nav:8805.7794,amount:100000},
+  {date:'2022-09-28',units:12.5397,nav:7965.9099,amount:100000},
+  {date:'2022-11-07',units:44.1411,nav:8826.4767,amount:390000},
+  {date:'2023-03-15',units:43.2780,nav:9233.3380,amount:400000},
+  {date:'2023-04-28',units:40.5035,nav:9865.8239,amount:400000},
+  {date:'2024-03-15',units:57.7182,nav:10384.9496,amount:600000},
+  {date:'2025-03-14',units:68.6490,nav:11670.9464,amount:802000},
+  {date:'2025-04-07',units:18.6841,nav:10747.0630,amount:201000},
+  {date:'2026-03-13',units:79.5098,nav:15077.4036,amount:1200000},
+];
+
+const ACCOUNTING_DATA = {
+  2021:{result:[{k:'Sum driftsinntekter',v:0},{k:'Driftskostnader',v:-8000},{k:'Driftsresultat',v:-8000,b:1},{k:'Finansinntekter',v:0},{k:'Resultat før skatt',v:-7000,b:1},{k:'Årsresultat',v:-7000,b:1,h:1}],balanse:[{k:'Sum investeringer',v:10000},{k:'Kasse/Bank',v:12000},{k:'SUM EIENDELER',v:23000,b:1,h:1},{k:'Innskutt EK',v:30000},{k:'Opptjent EK',v:-7000},{k:'Sum egenkapital',v:23000,b:1,h:1},{k:'Sum gjeld',v:0},{k:'SUM EK OG GJELD',v:23000,b:1}]},
+  2022:{result:[{k:'Sum driftsinntekter',v:0},{k:'Driftskostnader',v:-3000},{k:'Driftsresultat',v:-3000,b:1},{k:'Finansinntekter',v:437000},{k:'Resultat før skatt',v:433000,b:1},{k:'Skattekostnad',v:1000},{k:'Årsresultat',v:434000,b:1,h:1}],balanse:[{k:'Sum investeringer',v:786000},{k:'Kasse/Bank',v:7000},{k:'SUM EIENDELER',v:793000,b:1,h:1},{k:'Innskutt EK',v:366000},{k:'Opptjent EK',v:427000},{k:'Sum egenkapital',v:793000,b:1,h:1},{k:'Sum gjeld',v:0},{k:'SUM EK OG GJELD',v:793000,b:1}]},
+  2023:{result:[{k:'Sum driftsinntekter',v:0},{k:'Driftskostnader',v:-5000},{k:'Driftsresultat',v:-5000,b:1},{k:'Finansinntekter',v:129000},{k:'Resultat før skatt',v:124000,b:1},{k:'Skattekostnad',v:-1000},{k:'Årsresultat',v:123000,b:1,h:1}],balanse:[{k:'Sum investeringer',v:1713000},{k:'Kasse/Bank',v:7000},{k:'SUM EIENDELER',v:1720000,b:1,h:1},{k:'Innskutt EK',v:1170000},{k:'Opptjent EK',v:550000},{k:'Sum egenkapital',v:1720000,b:1,h:1},{k:'Sum gjeld',v:0},{k:'SUM EK OG GJELD',v:1720000,b:1}]},
+  2024:{result:[{k:'Sum driftsinntekter',v:0},{k:'Driftskostnader',v:0},{k:'Driftsresultat',v:0,b:1},{k:'Finansinntekter',v:292000},{k:'Resultat før skatt',v:292000,b:1},{k:'Skattekostnad',v:0},{k:'Årsresultat',v:292000,b:1,h:1}],balanse:[{k:'Sum investeringer',v:2604000},{k:'Kasse/Bank',v:8000},{k:'SUM EIENDELER',v:2612000,b:1,h:1},{k:'Innskutt EK',v:1770000},{k:'Opptjent EK',v:842000},{k:'Sum egenkapital',v:2612000,b:1,h:1},{k:'Sum gjeld',v:0},{k:'SUM EK OG GJELD',v:2612000,b:1}]},
+  2025:{result:[{k:'Sum driftsinntekter',v:0},{k:'Driftskostnader',v:-2000},{k:'Driftsresultat',v:-2000,b:1},{k:'Finansinntekter',v:823000},{k:'Resultat før skatt',v:821000,b:1},{k:'Skattekostnad',v:0},{k:'Årsresultat',v:821000,b:1,h:1}],balanse:[{k:'Sum investeringer',v:4429000},{k:'Kasse/Bank',v:6000},{k:'SUM EIENDELER',v:4435000,b:1,h:1},{k:'Innskutt EK',v:2772000},{k:'Opptjent EK',v:1663000},{k:'Sum egenkapital',v:4435000,b:1,h:1},{k:'Sum gjeld',v:0},{k:'SUM EK OG GJELD',v:4435000,b:1}]},
+};
+
+const SKJERM_RENTER = {2022:0.017,2023:0.033,2024:0.040,2025:0.039};
+const INNSKUTT_EK_PRIMO = {2022:30000,2023:366000,2024:1170000,2025:1770000};
+const INNGANG_PRIVAT = 2772000;
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+const PASSWORD = 'eoacapitalas!';
+let chartPeriod = 'all';
+let customDateFrom = null;
+let customDateTo = null;
+let chartInstances = {};
+
+// ═══════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════
+function doLogin(){
+  if(document.getElementById('pw-input').value === PASSWORD){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('portal').style.display='block';
+    init();
+  } else {
+    document.getElementById('login-err').style.display='block';
+    document.getElementById('pw-input').value='';
+  }
+}
+function doLogout(){
+  document.getElementById('portal').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('pw-input').value='';
+}
+function showPage(name,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a=>a.classList.remove('active'));
+  el.classList.add('active');
+  if(name==='analyse') renderAnalyse();
+  if(name==='regnskap') renderRegnskap();
+  if(name==='avkastning') renderAvkastning();
+}
+
+// ═══════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════
+const fmt=(n,d=0)=>n.toLocaleString('nb-NO',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtKr=n=>fmt(Math.round(n))+' kr';
+const fmtPct=(n,d=1)=>(n>=0?'+':'')+((n*100).toFixed(d))+'%';
+const pc=n=>n>=0?'pos-val':'neg-val';
+const bc=n=>n>=0?'pos':'neg';
+
+function totalUnits(){ return PAN_TX.reduce((s,t)=>s+t.units,0); }
+function totalInvested(){ return PAN_TX.reduce((s,t)=>s+t.amount,0); }
+
+function navNow(){ return navSeries.length ? navSeries[navSeries.length-1].n : 15296.3311; }
+function osebxNow(){ return navSeries.length ? navSeries[navSeries.length-1].o : null; }
+
+function navOnDate(dateStr){
+  for(let i=navSeries.length-1;i>=0;i--){
+    if(navSeries[i].d<=dateStr) return navSeries[i].n;
+  }
+  return null;
+}
+function osebxOnDate(dateStr){
+  for(let i=navSeries.length-1;i>=0;i--){
+    if(navSeries[i].d<=dateStr && navSeries[i].o) return navSeries[i].o;
+  }
+  return null;
+}
+
+function calcTWR(nav){
+  let twr=1;
+  for(let i=0;i<PAN_TX.length;i++){
+    const navEnd = i<PAN_TX.length-1 ? PAN_TX[i+1].nav : nav;
+    twr *= navEnd/PAN_TX[i].nav;
+  }
+  return twr-1;
+}
+function calcFundTWR(nav){ return nav/PAN_TX[0].nav-1; }
+function yearsFromStart(){ return (new Date()-new Date(PAN_TX[0].date))/(365.25*24*3600*1000); }
+function annualized(r,y){ return Math.pow(1+r,1/y)-1; }
+function calcMWR(nav){
+  const t0=new Date(PAN_TX[0].date);
+  const flows=PAN_TX.map(tx=>({t:(new Date(tx.date)-t0)/(365.25*24*3600*1000),cf:-tx.amount}));
+  flows.push({t:(new Date()-t0)/(365.25*24*3600*1000),cf:totalUnits()*nav});
+  const npv=r=>flows.reduce((s,f)=>s+f.cf/Math.pow(1+r,f.t),0);
+  const dnpv=r=>flows.reduce((s,f)=>s-f.t*f.cf/Math.pow(1+r,f.t+1),0);
+  let r=0.10;
+  for(let i=0;i<200;i++){const n=npv(r),d=dnpv(r);if(Math.abs(n)<0.01)break;const nr=r-n/d;r=isFinite(nr)?Math.max(-0.99,Math.min(10,nr)):r;}
+  return r;
+}
+
+// ═══════════════════════════════════════════════
+// CANVAS CHART ENGINE
+// ═══════════════════════════════════════════════
+function drawCanvas(canvasId, datasets, opts={}) {
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  
+  // Set actual pixel dimensions
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const W = Math.floor(rect.width - 48); // 24px padding each side
+  const H = parseInt(canvas.getAttribute('height')) || 180;
+  canvas.width = W;
+  canvas.height = H;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  
+  const PAD = {top:10, right:10, bottom:28, left:10};
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+  
+  // Find data range
+  const allX = datasets.flatMap(d=>d.points.map(p=>p.x));
+  const allY = datasets.flatMap(d=>d.points.map(p=>p.y));
+  const minX=Math.min(...allX), maxX=Math.max(...allX);
+  const rawMinY=Math.min(...allY), rawMaxY=Math.max(...allY);
+  const padY = (rawMaxY-rawMinY)*0.08 || 1;
+  const minY=rawMinY-padY, maxY=rawMaxY+padY;
+  
+  const toCanvasX = x => PAD.left + (x-minX)/(maxX-minX||1)*cW;
+  const toCanvasY = y => PAD.top + (1-(y-minY)/(maxY-minY||1))*cH;
+  
+  // Zero line
+  if(opts.zeroline){
+    const zy=toCanvasY(0);
+    ctx.strokeStyle='rgba(0,0,0,0.12)';
+    ctx.lineWidth=1;
+    ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(PAD.left,zy); ctx.lineTo(W-PAD.right,zy); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  
+  // Grid lines
+  const gridCount=4;
+  ctx.strokeStyle='rgba(0,0,0,0.05)';
+  ctx.lineWidth=1;
+  for(let i=1;i<gridCount;i++){
+    const y=PAD.top+cH*i/gridCount;
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
+  }
+  
+  // X axis labels
+  ctx.fillStyle='#9a9088';
+  ctx.font='10px Inter, sans-serif';
+  ctx.textAlign='center';
+  const labelCount=5;
+  for(let i=0;i<=labelCount;i++){
+    const x=minX+(maxX-minX)*i/labelCount;
+    const cx=PAD.left+cW*i/labelCount;
+    const d=new Date(x);
+    const lbl=d.toLocaleDateString('nb-NO',{month:'short',year:'2-digit'});
+    ctx.fillText(lbl,cx,H-6);
+  }
+  
+  // Y axis labels (inside, left)
+  ctx.textAlign='left';
+  for(let i=1;i<gridCount;i++){
+    const yv=minY+(maxY-minY)*(1-i/gridCount);
+    const cy=PAD.top+cH*i/gridCount;
+    const lbl=opts.yFmt ? opts.yFmt(yv) : yv.toFixed(1);
+    ctx.fillText(lbl,PAD.left+2,cy-3);
+  }
+  
+  // Draw datasets
+  for(const ds of datasets){
+    if(!ds.points.length) continue;
+    
+    // Area fill
+    if(ds.fill){
+      ctx.beginPath();
+      ctx.moveTo(toCanvasX(ds.points[0].x), toCanvasY(0));
+      ds.points.forEach(p=>ctx.lineTo(toCanvasX(p.x),toCanvasY(p.y)));
+      ctx.lineTo(toCanvasX(ds.points[ds.points.length-1].x),toCanvasY(0));
+      ctx.closePath();
+      const grad=ctx.createLinearGradient(0,PAD.top,0,H-PAD.bottom);
+      grad.addColorStop(0,ds.fill+'33');
+      grad.addColorStop(1,ds.fill+'05');
+      ctx.fillStyle=grad;
+      ctx.fill();
+    }
+    
+    // Line
+    ctx.beginPath();
+    ctx.strokeStyle=ds.color;
+    ctx.lineWidth=ds.width||2;
+    if(ds.dash) ctx.setLineDash(ds.dash);
+    ds.points.forEach((p,i)=>{
+      const cx=toCanvasX(p.x), cy=toCanvasY(p.y);
+      i===0 ? ctx.moveTo(cx,cy) : ctx.lineTo(cx,cy);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+    
+    // End dot
+    if(ds.dot){
+      const last=ds.points[ds.points.length-1];
+      const cx=toCanvasX(last.x), cy=toCanvasY(last.y);
+      ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2);
+      ctx.fillStyle=ds.color; ctx.fill();
+    }
+  }
+  
+  // Store for tooltip
+  canvas._chartData = { datasets, minX, maxX, minY, maxY, PAD, cW, cH, W, H, toCanvasX, toCanvasY, opts };
+  
+  // Tooltip
+  setupTooltip(canvas, canvasId);
+  
+  return { toCanvasX, toCanvasY, minX, maxX };
+}
+
+function setupTooltip(canvas, canvasId){
+  canvas.onmousemove = function(e){
+    const d = canvas._chartData;
+    if(!d) return;
+    const rect = canvas.getBoundingClientRect();
+    const mx = (e.clientX-rect.left)*(canvas.width/rect.width);
+    const xVal = d.minX + (mx-d.PAD.left)/d.cW*(d.maxX-d.minX);
+    
+    // Find nearest points
+    const ds0 = d.datasets[0];
+    if(!ds0 || !ds0.points.length) return;
+    let closest = ds0.points.reduce((a,b)=>Math.abs(b.x-xVal)<Math.abs(a.x-xVal)?b:a);
+    
+    // Build tooltip
+    const ttId = 'tt-'+canvasId.replace('chart-','');
+    const tt = document.getElementById(ttId);
+    if(!tt) return;
+    
+    const date = new Date(closest.x).toLocaleDateString('nb-NO',{day:'numeric',month:'short',year:'numeric'});
+    let html = `<div class="tt-date">${date}</div>`;
+    
+    for(const ds of d.datasets){
+      const pt = ds.points.reduce((a,b)=>Math.abs(b.x-xVal)<Math.abs(a.x-xVal)?b:a);
+      const valFmt = d.opts.yFmt ? d.opts.yFmt(pt.y) : pt.y.toFixed(2);
+      html += `<div class="tt-row"><span class="tt-lbl" style="color:${ds.color}">${ds.label}</span><span class="tt-val">${valFmt}</span></div>`;
+    }
+    
+    tt.innerHTML=html;
+    tt.style.display='block';
+    const cx = (d.toCanvasX(closest.x)/canvas.width)*rect.width;
+    tt.style.left=Math.max(60,Math.min(rect.width-120,cx))+'px';
+    tt.style.top='4px';
+    
+    // Draw crosshair
+    redrawWithCrosshair(canvas, closest.x);
+  };
+  canvas.onmouseleave=function(){
+    const ttId = 'tt-'+canvasId.replace('chart-','');
+    const tt=document.getElementById(ttId);
+    if(tt) tt.style.display='none';
+    // Redraw without crosshair
+    if(canvas._redrawFn) canvas._redrawFn();
+  };
+}
+
+function redrawWithCrosshair(canvas, xVal){
+  const d=canvas._chartData;
+  if(!d) return;
+  if(canvas._redrawFn){ canvas._redrawFn(); }
+  const ctx=canvas.getContext('2d');
+  const cx=d.toCanvasX(xVal);
+  ctx.strokeStyle='rgba(0,0,0,0.15)';
+  ctx.lineWidth=1;
+  ctx.setLineDash([3,3]);
+  ctx.beginPath();
+  ctx.moveTo(cx,d.PAD.top);
+  ctx.lineTo(cx,d.H-d.PAD.bottom);
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ═══════════════════════════════════════════════
+// FILTER BY PERIOD
+// ═══════════════════════════════════════════════
+function getFilteredSeries(){
+  const now=new Date();
+  let cutoff=new Date(PAN_TX[0].date);
+  let cutend=null;
+
+  if(chartPeriod==='1y') cutoff=new Date(now-365*24*3600*1000);
+  else if(chartPeriod==='3y') cutoff=new Date(now-3*365*24*3600*1000);
+  else if(chartPeriod==='ytd') cutoff=new Date(now.getFullYear()+'-01-01');
+  else if(chartPeriod==='custom'){
+    if(customDateFrom) cutoff=new Date(customDateFrom);
+    if(customDateTo) cutend=new Date(customDateTo);
+  }
+
+  const cutStr=cutoff.toISOString().slice(0,10);
+  const endStr=cutend?cutend.toISOString().slice(0,10):null;
+  return navSeries.filter(r=>r.d>=cutStr && (!endStr||r.d<=endStr));
+}
+
+// ═══════════════════════════════════════════════
+// DRAW CHARTS
+// ═══════════════════════════════════════════════
+function setChartPeriod(p,el){
+  chartPeriod=p;
+  document.querySelectorAll('.period-tabs .ptab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+
+  const customRow=document.getElementById('custom-date-row');
+  if(p==='custom'){
+    customRow.style.display='flex';
+    // Set default dates if not already set
+    if(!customDateFrom){
+      const from=document.getElementById('date-from');
+      from.value=PAN_TX[0].date;
+      customDateFrom=PAN_TX[0].date;
+    }
+    if(!customDateTo){
+      const to=document.getElementById('date-to');
+      to.value=navSeries[navSeries.length-1]?.d||new Date().toISOString().slice(0,10);
+      customDateTo=to.value;
+    }
+  } else {
+    customRow.style.display='none';
+  }
+  drawCharts();
+}
+
+function applyCustomDates(){
+  customDateFrom=document.getElementById('date-from').value||null;
+  customDateTo=document.getElementById('date-to').value||null;
+  if(chartPeriod==='custom') drawCharts();
+}
+
+function drawCharts(){
+  const series=getFilteredSeries();
+  if(!series.length) return;
+  
+  const n0=series[0].n;
+  const o0=series[0].o;
+  
+  // Returns chart
+  const panPts=series.map(r=>({x:new Date(r.d).getTime(),y:(r.n/n0-1)*100}));
+  const osePts=series.filter(r=>r.o).map(r=>({x:new Date(r.d).getTime(),y:(r.o/(o0||r.o)-1)*100}));
+  
+  const retChart = drawCanvas('chart-returns',[
+    {label:'PAN A',points:panPts,color:'#1a5c35',width:2,fill:'#1a5c35',dot:true},
+    {label:'OSEBX',points:osePts,color:'#8a6a20',width:1.5},
+  ],{zeroline:true,yFmt:v=>(v>=0?'+':'')+v.toFixed(1)+'%'});
+  if(retChart) document.getElementById('chart-returns')._redrawFn=()=>drawCharts();
+  
+  // Portfolio MV chart
+  function getMV(dateStr){
+    const n=navOnDate(dateStr);
+    if(!n) return null;
+    let u=0;
+    for(const tx of PAN_TX){ if(tx.date<=dateStr) u+=tx.units; else break; }
+    return u*n;
+  }
+  function getInv(dateStr){
+    let s=0;
+    for(const tx of PAN_TX){ if(tx.date<=dateStr) s+=tx.amount; else break; }
+    return s;
+  }
+  
+  const mvPts=series.map(r=>({x:new Date(r.d).getTime(),y:getMV(r.d)})).filter(p=>p.y>0);
+  const invPts=series.map(r=>({x:new Date(r.d).getTime(),y:getInv(r.d)})).filter(p=>p.y>0);
+  
+  drawCanvas('chart-mv',[
+    {label:'Markedsverdi',points:mvPts,color:'#1a5c35',width:2.5,fill:'#1a5c35',dot:true},
+    {label:'Investert',points:invPts,color:'#b0a898',width:1.5,dash:[5,3]},
+  ],{yFmt:v=>(v/1000000).toFixed(1)+'M'});
+  document.getElementById('chart-mv')._redrawFn=()=>drawCharts();
+}
+
+// ═══════════════════════════════════════════════
+// RENDER KPI
+// ═══════════════════════════════════════════════
+function renderKPI(){
+  const nav=navNow();
+  const units=totalUnits();
+  const mv=units*nav;
+  const cost=totalInvested();
+  const gain=mv-cost;
+  const twr=calcTWR(nav);
+  const fundTwr=calcFundTWR(nav);
+  const mwr=calcMWR(nav);
+  const yrs=yearsFromStart();
+  const twrPA=annualized(twr,yrs);
+  const mwrPA=mwr;
+  const fundPA=annualized(fundTwr,yrs);
+  
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  const setBadge=(id,v,cls)=>{const el=document.getElementById(id);if(el){el.textContent=v;el.className='kpi-badge '+cls;}};
+  
+  set('kpi-mv',fmtKr(mv));
+  setBadge('kpi-gain-badge',(gain>=0?'+':'')+fmtKr(gain),bc(gain));
+  set('kpi-twr',fmtPct(twr)); setBadge('kpi-twr-pa',fmtPct(twrPA)+' p.a.',bc(twrPA));
+  set('kpi-mwr',fmtPct(mwr)); setBadge('kpi-mwr-pa',fmtPct(mwrPA)+' p.a.',bc(mwrPA));
+  set('kpi-fund',fmtPct(fundTwr)); setBadge('kpi-fund-pa',fmtPct(fundPA)+' p.a.','neutral');
+  
+  set('h-units',fmt(units,4));
+  set('h-nav',fmtKr(nav));
+  set('h-mv',fmtKr(mv));
+  set('h-cost',fmtKr(cost));
+  set('h-gain',(gain>=0?'+':'')+fmtKr(gain));
+  set('h-pct',fmtPct(gain/cost));
+  
+  const last=navSeries[navSeries.length-1];
+  set('upd-date',last?last.d:'—');
+  document.getElementById('nav-date').textContent=last?'NAV '+last.d:'';
+}
+
+// ═══════════════════════════════════════════════
+// PERIOD TABLE
+// ═══════════════════════════════════════════════
+function renderPeriodTable(){
+  const nav=navNow();
+  const now=new Date();
+  const periods=[
+    {lbl:'Siste måned',start:new Date(now-30*24*3600*1000).toISOString().slice(0,10)},
+    {lbl:'År til dato',start:now.getFullYear()+'-01-01'},
+    {lbl:'Siste 12 mnd',start:new Date(now-365*24*3600*1000).toISOString().slice(0,10)},
+    {lbl:'3 år',start:new Date(now-3*365*24*3600*1000).toISOString().slice(0,10)},
+    {lbl:'Fra start',start:PAN_TX[0].date},
+  ];
+  const oNow=osebxNow();
+  const rows=periods.map(p=>{
+    const n0=navOnDate(p.start)||PAN_TX[0].nav;
+    const o0=osebxOnDate(p.start);
+    const panR=nav/n0-1;
+    const oseR=o0&&oNow?oNow/o0-1:null;
+    const units=PAN_TX.filter(t=>t.date<p.start).reduce((s,t)=>s+t.units,0);
+    const mvStart=units*(n0||nav);
+    const mvNow=totalUnits()*nav;
+    const mvR=mvStart>0?mvNow/mvStart-1:null;
+    return `<tr>
+      <td style="font-weight:500;color:var(--text)">${p.lbl}</td>
+      <td class="${pc(panR)}">${fmtPct(panR)}</td>
+      <td class="${oseR!==null?pc(oseR):''}">${oseR!==null?fmtPct(oseR):'—'}</td>
+      <td class="${mvR!==null?pc(mvR):''}">${mvR!==null?fmtPct(mvR):'—'}</td>
+    </tr>`;
+  });
+  document.getElementById('period-tbody').innerHTML=rows.join('');
+}
+
+// ═══════════════════════════════════════════════
+// AVKASTNING PAGE
+// ═══════════════════════════════════════════════
+function renderAvkastning(){
+  const nav=navNow();
+  const twr=calcTWR(nav);
+  const mwr=calcMWR(nav);
+  const fundTwr=calcFundTWR(nav);
+  const yrs=yearsFromStart();
+  
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  const setBadge=(id,v,cls)=>{const el=document.getElementById(id);if(el){el.textContent=v;el.className='kpi-badge '+cls;}};
+  
+  set('av-twr',fmtPct(twr)); setBadge('av-twr-pa',fmtPct(annualized(twr,yrs))+' p.a.',bc(twr));
+  set('av-mwr',fmtPct(mwr)); setBadge('av-mwr-pa',fmtPct(mwr)+' ann. IRR',bc(mwr));
+  set('av-fund',fmtPct(fundTwr)); setBadge('av-fund-pa',fmtPct(annualized(fundTwr,yrs))+' p.a.','neutral');
+  
+  // Per-investment table
+  const oNow=osebxNow();
+  const rows=PAN_TX.map(tx=>{
+    const totalR=nav/tx.nav-1;
+    const yrs2=(new Date()-new Date(tx.date))/(365.25*24*3600*1000);
+    const annR=yrs2>0?Math.pow(1+totalR,1/yrs2)-1:totalR;
+    const o0=osebxOnDate(tx.date);
+    const oseAnn=o0&&oNow&&yrs2>0?Math.pow(oNow/o0,1/yrs2)-1:null;
+    const yrsLbl=yrs2>=1?yrs2.toFixed(1)+' år':Math.round(yrs2*12)+' mnd';
+    return `<tr>
+      <td><div style="font-weight:500;color:var(--text)">${new Date(tx.date).toLocaleDateString('nb-NO')}</div><div style="font-size:11px;color:var(--text3)">${yrsLbl} siden</div></td>
+      <td>${fmtKr(tx.amount)}</td>
+      <td style="color:var(--text3)">${fmt(tx.nav,0)}</td>
+      <td style="color:var(--text3)">${fmt(nav,0)}</td>
+      <td class="${pc(totalR)}">${fmtPct(totalR)}</td>
+      <td class="${pc(annR)}"><strong>${fmtPct(annR)}</strong></td>
+      <td class="${oseAnn!==null?pc(oseAnn):''}">${oseAnn!==null?fmtPct(oseAnn):'—'}</td>
+    </tr>`;
+  });
+  document.getElementById('twr-tbody').innerHTML=rows.join('');
+  
+  // Annual table
+  if(navSeries.length>250){
+    const byYear={};
+    navSeries.forEach(r=>{const y=r.d.slice(0,4);if(!byYear[y]){byYear[y]={first:r,last:r};}else byYear[y].last=r;});
+    const yrs3=Object.keys(byYear).sort();
+    const aRows=[];
+    for(let i=1;i<yrs3.length;i++){
+      const y=yrs3[i];
+      const prev=byYear[yrs3[i-1]].last;
+      const panR=byYear[y].last.n/prev.n-1;
+      const oseR=prev.o&&byYear[y].last.o?byYear[y].last.o/prev.o-1:null;
+      const diff=oseR!==null?panR-oseR:null;
+      aRows.push(`<tr>
+        <td style="font-weight:500;color:var(--text)">${y}</td>
+        <td class="${pc(panR)}">${fmtPct(panR)}</td>
+        <td class="${oseR!==null?pc(oseR):''}">${oseR!==null?fmtPct(oseR):'—'}</td>
+        <td class="${diff!==null?pc(diff):''}">${diff!==null?fmtPct(diff):'—'}</td>
+      </tr>`);
+    }
+    document.getElementById('annual-tbody').innerHTML=aRows.join('');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// TRANSACTIONS
+// ═══════════════════════════════════════════════
+function renderTransactions(){
+  const nav=navNow();
+  let cum=0;
+  const rows=PAN_TX.map(tx=>{
+    cum+=tx.units;
+    const mv=cum*nav;
+    const cost=PAN_TX.slice(0,PAN_TX.indexOf(tx)+1).reduce((s,t)=>s+t.amount,0);
+    const g=mv-cost;
+    return `<tr>
+      <td>${new Date(tx.date).toLocaleDateString('nb-NO')}</td>
+      <td>${fmt(tx.units,4)}</td>
+      <td>${fmt(tx.nav,2)}</td>
+      <td>${fmtKr(tx.amount)}</td>
+      <td>${fmt(cum,4)}</td>
+      <td>${fmtKr(mv)}</td>
+      <td class="${pc(g)}">${(g>=0?'+':'')+fmtKr(g)}</td>
+      <td class="${pc(g/cost)}">${fmtPct(g/cost)}</td>
+    </tr>`;
+  });
+  document.getElementById('tx-tbody').innerHTML=rows.join('');
+  const totalMV=totalUnits()*nav;
+  const totalCost=totalInvested();
+  const totalG=totalMV-totalCost;
+  document.getElementById('tx-tfoot').innerHTML=`
+    <tr class="bold-row">
+      <td colspan="3">TOTALT</td>
+      <td>${fmtKr(totalCost)}</td>
+      <td>${fmt(totalUnits(),4)}</td>
+      <td class="gold-val">${fmtKr(totalMV)}</td>
+      <td class="${pc(totalG)}">${(totalG>=0?'+':'')+fmtKr(totalG)}</td>
+      <td class="${pc(totalG/totalCost)}">${fmtPct(totalG/totalCost)}</td>
+    </tr>`;
+}
+
+// ═══════════════════════════════════════════════
+// ANALYSE
+// ═══════════════════════════════════════════════
+function renderAnalyse(){
+  if(navSeries.length<30) return;
+  const nav=navNow();
+  
+  // Risk metrics
+  const returns=[];
+  for(let i=1;i<navSeries.length;i++) returns.push(navSeries[i].n/navSeries[i-1].n-1);
+  const mean=returns.reduce((s,r)=>s+r,0)/returns.length;
+  const variance=returns.reduce((s,r)=>s+Math.pow(r-mean,2),0)/returns.length;
+  const vol=Math.sqrt(variance)*Math.sqrt(252);
+  const yrs=navSeries.length/252;
+  const annR=Math.pow(nav/navSeries[0].n,1/yrs)-1;
+  const sharpe=(annR-0.04)/vol;
+  let peak=navSeries[0].n,maxDD=0;
+  for(const r of navSeries){if(r.n>peak)peak=r.n;const dd=(peak-r.n)/peak;if(dd>maxDD)maxDD=dd;}
+  
+  let bestR=-Infinity,bestStart='',bestEnd='';
+  for(let i=0;i<navSeries.length;i++){
+    const endD=navSeries[i].d;
+    const startDt=new Date(endD);startDt.setFullYear(startDt.getFullYear()-1);
+    const sD=startDt.toISOString().slice(0,10);
+    const n0=navOnDate(sD);
+    if(!n0) continue;
+    const r=navSeries[i].n/n0-1;
+    if(r>bestR){bestR=r;bestStart=sD;bestEnd=endD;}
+  }
+  
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('r-sharpe',sharpe.toFixed(2));
+  set('r-vol',fmtPct(vol));
+  set('r-dd','−'+fmtPct(maxDD));
+  set('r-best',fmtPct(bestR));
+  set('r-best-period',new Date(bestStart).toLocaleDateString('nb-NO',{month:'short',year:'numeric'})+' – '+new Date(bestEnd).toLocaleDateString('nb-NO',{month:'short',year:'numeric'}));
+  
+  // Skatt
+  const mv=totalUnits()*nav;
+  const cost=totalInvested();
+  const gain=mv-cost;
+  const taxAS=Math.max(0,gain*0.03*0.22);
+  const netAS=mv-taxAS;
+  set('sk-mv',fmtKr(mv));
+  set('sk-cost',fmtKr(cost));
+  set('sk-gain',(gain>=0?'+':'')+fmtKr(gain));
+  set('sk-tax-as','−'+fmtKr(taxAS));
+  set('sk-net-as',fmtKr(netAS));
+  
+  // Skjerming
+  let akkSkjerm=0;
+  Object.keys(SKJERM_RENTER).sort().forEach(y=>{akkSkjerm+=INNSKUTT_EK_PRIMO[y]*SKJERM_RENTER[y];});
+  const skattepliktig=Math.max(0,netAS-INNGANG_PRIVAT-akkSkjerm);
+  const privTax=skattepliktig*0.3784;
+  const netto=netAS-privTax;
+  const effRate=(taxAS+privTax)/(mv+6000);
+  set('liq-as',fmtKr(netAS));
+  set('liq-skjerm','−'+fmtKr(akkSkjerm));
+  set('liq-skattepliktig',fmtKr(skattepliktig));
+  set('liq-priv-tax','−'+fmtKr(privTax));
+  set('liq-netto',fmtKr(netto));
+  set('liq-eff',fmtPct(effRate)+' av total verdi');
+}
+
+// ═══════════════════════════════════════════════
+// REGNSKAP
+// ═══════════════════════════════════════════════
+function renderRegnskap(){
+  const years=Object.keys(ACCOUNTING_DATA).map(Number).sort((a,b)=>a-b);
+  
+  // ── EK Bar Chart ────────────────────────────────────
+  const canvas = document.getElementById('chart-ek');
+  if(canvas){
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const W = Math.max(200, Math.floor(rect.width - 40));
+    const H = 160;
+    canvas.width = W; canvas.height = H;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,W,H);
+
+    const ekVals = years.map(y=>{const r=ACCOUNTING_DATA[y].balanse.find(r=>r.k==='Sum egenkapital');return r?r.v:0;});
+    const resVals = years.map(y=>{const r=ACCOUNTING_DATA[y].result.find(r=>r.k==='Årsresultat');return r?r.v:0;});
+    const maxVal = Math.max(...ekVals)*1.12;
+    const PAD={top:10,right:8,bottom:28,left:8};
+    const cW=W-PAD.left-PAD.right, cH=H-PAD.top-PAD.bottom;
+    const barW = cW/years.length*0.55;
+    const gap = cW/years.length;
+    const sy = v => PAD.top + (1-v/maxVal)*cH;
+
+    // Grid
+    ctx.strokeStyle='rgba(0,0,0,0.05)'; ctx.lineWidth=1;
+    [0.25,0.5,0.75,1].forEach(f=>{
+      const y=PAD.top+cH*(1-f);
+      ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(W-PAD.right,y); ctx.stroke();
+      ctx.fillStyle='#9a9088'; ctx.font='9px Inter,sans-serif'; ctx.textAlign='left';
+      ctx.fillText((maxVal*f/1000000).toFixed(1)+'M', PAD.left+2, y-3);
+    });
+
+    years.forEach((y,i)=>{
+      const cx = PAD.left + i*gap + gap/2;
+      const ek = ekVals[i];
+      const res = resVals[i];
+
+      // EK bar
+      const bh = (ek/maxVal)*cH;
+      const by = PAD.top+cH-bh;
+      ctx.fillStyle='#1a5c35';
+      ctx.globalAlpha=0.8;
+      ctx.fillRect(cx-barW/2, by, barW, bh);
+
+      // Result overlay (darker green or red)
+      if(res!==0){
+        const rh = Math.abs(res)/maxVal*cH;
+        const ry = res>=0 ? by : by+bh;
+        ctx.fillStyle = res>=0 ? '#8a6a20' : '#8b2020';
+        ctx.globalAlpha=0.7;
+        ctx.fillRect(cx-barW/2+2, ry, barW-4, Math.max(2,rh));
+      }
+      ctx.globalAlpha=1;
+
+      // X label
+      ctx.fillStyle='#9a9088'; ctx.font='10px Inter,sans-serif'; ctx.textAlign='center';
+      ctx.fillText(y, cx, H-6);
+
+      // Value label on top
+      ctx.fillStyle='#1a5c35'; ctx.font='bold 9px Inter,sans-serif';
+      ctx.fillText((ek/1000000).toFixed(1)+'M', cx, by-3);
+    });
+  }
+
+  // ── Nøkkeltall ────────────────────────────────────────
+  const lastYear = years[years.length-1];
+  const prevYear = years[years.length-2];
+  const lastData = ACCOUNTING_DATA[lastYear];
+  const prevData = ACCOUNTING_DATA[prevYear];
+
+  const getVal = (data, section, key) => {
+    const row = data?.[section]?.find(r=>r.k===key);
+    return row ? row.v : null;
+  };
+
+  const ekLast  = getVal(lastData,'balanse','Sum egenkapital');
+  const ekPrev  = getVal(prevData,'balanse','Sum egenkapital');
+  const eienLast = getVal(lastData,'balanse','SUM EIENDELER');
+  const resLast  = getVal(lastData,'result','Årsresultat');
+
+  // EK-andel = EK / Sum eiendeler
+  const ekAndel = ekLast && eienLast ? ekLast/eienLast : null;
+  // ROE = årsresultat / gjennomsnittlig EK
+  const avgEK = ekLast && ekPrev ? (ekLast+ekPrev)/2 : ekLast;
+  const roe = resLast && avgEK ? resLast/avgEK : null;
+
+  const setEl=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  if(ekAndel!==null){
+    setEl('kpi-ek-andel', (ekAndel*100).toFixed(1)+'%');
+    setEl('kpi-ek-andel-sub', `${fmtKr(ekLast)} av ${fmtKr(eienLast)}`);
+    document.getElementById('kpi-ek-andel').className='';
+    document.getElementById('kpi-ek-andel').style.cssText='font-family:\'Libre Baskerville\',serif;font-size:28px;font-weight:400;line-height:1;margin-bottom:6px;color:'+(ekAndel>0.7?'var(--green)':'var(--text)');
+  }
+  if(roe!==null){
+    setEl('kpi-roe', (roe>=0?'+':'')+(roe*100).toFixed(1)+'%');
+    setEl('kpi-roe-sub', `Resultat ${fmtKr(resLast)} / Gj.snitt EK ${fmtKr(Math.round(avgEK))}`);
+    document.getElementById('kpi-roe').style.cssText='font-family:\'Libre Baskerville\',serif;font-size:28px;font-weight:400;line-height:1;margin-bottom:6px;color:'+(roe>=0?'var(--green)':'var(--red)');
+  }
+
+  // Quick key figures row
+  const driftRes = getVal(lastData,'result','Driftsresultat');
+  const finansInnt = getVal(lastData,'result','Finansinntekter');
+  const rows2=[
+    {lbl:'Årsresultat '+lastYear, val:resLast, fmt:v=>fmtKr(v), hl:true},
+    {lbl:'Finansinntekter', val:finansInnt, fmt:v=>fmtKr(v)},
+    {lbl:'EK vekst vs. forrige år', val:ekLast&&ekPrev?ekLast-ekPrev:null, fmt:v=>(v>=0?'+':'')+fmtKr(v)},
+  ];
+  document.getElementById('regn-kpi-rows').innerHTML = rows2.map(r=>`
+    <div style="display:flex;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border)">
+      <div style="font-size:13px;color:var(--text2)">${r.lbl}</div>
+      <div style="font-size:13px;font-weight:500;color:${r.val===null?'var(--text3)':r.val>=0?'var(--green)':'var(--red)'}">
+        ${r.val===null?'—':r.fmt(r.val)}
+      </div>
+    </div>`).join('');
+  
+  // Tables
+  const resultKeys=ACCOUNTING_DATA[years[0]].result.map(r=>r.k);
+  const balanseKeys=ACCOUNTING_DATA[years[0]].balanse.map(r=>r.k);
+  
+  const mkHead=()=>`<tr><th>Post</th>${years.map(y=>`<th style="text-align:right">${y}</th>`).join('')}</tr>`;
+  const mkBody=(keys,section)=>keys.map(k=>{
+    const first=ACCOUNTING_DATA[years[0]][section].find(r=>r.k===k);
+    const isBold=first&&first.b;
+    const isHl=first&&first.h;
+    return `<tr style="${isBold?'background:var(--cream)':''}">
+      <td style="${isBold?'font-weight:600;color:var(--text)':'color:var(--text2)'}">${k}</td>
+      ${years.map(y=>{
+        const d=ACCOUNTING_DATA[y];
+        const row=d?d[section].find(r=>r.k===k):null;
+        const v=row?row.v:null;
+        if(v===null) return '<td>—</td>';
+        const cls=isHl?(v>=0?'gold-val':'neg-val'):(v<0&&!isBold?'neg-val':'');
+        return `<td class="${cls}" style="text-align:right;${isBold?'font-weight:600':''}">${v<0?'−':''}${fmtKr(Math.abs(v))}</td>`;
+      }).join('')}
+    </tr>`;
+  }).join('');
+  
+  document.getElementById('regn-result-head').innerHTML=mkHead();
+  document.getElementById('regn-result-body').innerHTML=mkBody(resultKeys,'result');
+  document.getElementById('regn-balanse-head').innerHTML=mkHead();
+  document.getElementById('regn-balanse-body').innerHTML=mkBody(balanseKeys,'balanse');
+  
+  // Skjerming
+  let akkum=0;
+  const rows=Object.keys(SKJERM_RENTER).sort().map(y=>{
+    const primo=INNSKUTT_EK_PRIMO[y]||0;
+    const rente=SKJERM_RENTER[y];
+    const aars=primo*rente;
+    akkum+=aars;
+    return `<tr>
+      <td style="font-weight:500;color:var(--text)">${y}</td>
+      <td>${fmtKr(primo)}</td>
+      <td>${(rente*100).toFixed(1)}%</td>
+      <td class="pos-val">${fmtKr(aars)}</td>
+      <td style="font-weight:600;color:var(--gold)">${fmtKr(akkum)}</td>
+    </tr>`;
+  });
+  document.getElementById('skjerm-tbody').innerHTML=rows.join('');
+}
+
+// ═══════════════════════════════════════════════
+// FETCH LATEST NAV + OSEBX
+// ═══════════════════════════════════════════════
+// ── CORS proxies to try in order ────────────────────────────────────────────
+const PROXIES = [
+  url => `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,
+  url => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`,
+  url => `https://thingproxy.freeboard.io/fetch/${url}`,
+];
+
+async function proxyFetch(targetUrl, timeoutMs=10000){
+  for(const mkProxy of PROXIES){
+    try{
+      const proxyUrl = mkProxy(targetUrl);
+      const r = await fetch(proxyUrl, {signal:AbortSignal.timeout(timeoutMs)});
+      if(!r.ok){ console.warn('Proxy returned',r.status,'for',proxyUrl); continue; }
+      const text = await r.text();
+      // allorigins wraps in {contents:...}, others return raw
+      try{
+        const j = JSON.parse(text);
+        if(j.contents) return typeof j.contents==='string' ? j.contents : JSON.stringify(j.contents);
+        return text;
+      }catch{ return text; }
+    }catch(e){ console.warn('Proxy failed:',e.message); }
+  }
+  return null;
+}
+
+async function fetchLatestData(){
+  const btn=document.getElementById('update-btn');
+  const icon=document.getElementById('update-icon');
+  btn.classList.add('loading');
+  icon.innerHTML='<span class="spinner"></span>';
+  showStatus('Henter NAV og OSEBX — prøver flere kilder…','');
+
+  try {
+    const lastDate = navSeries[navSeries.length-1].d;
+    const lastNav  = navSeries[navSeries.length-1].n;
+    const lastOse  = navSeries.filter(r=>r.o).pop()?.o;
+
+    showStatus('Henter NAV fra paretoam.com…','');
+    let newNavRows = await fetchParetoNAV(lastNav);
+
+    if(!newNavRows || !newNavRows.length){
+      showStatus('Pareto feilet — prøver Yahoo Finance…','');
+      newNavRows = await fetchYahooNAV(lastDate, lastNav);
+    }
+
+    if(!newNavRows || !newNavRows.length){
+      showStatus('Yahoo feilet — prøver Morningstar…','');
+      newNavRows = await fetchMorningstarNAV(lastDate);
+    }
+
+    if(!newNavRows || !newNavRows.length){
+      showStatus('⚠ Klarte ikke hente NAV. Prøv "Last opp Excel" i stedet.','warn');
+      btn.classList.remove('loading'); icon.innerHTML='↻'; return;
+    }
+
+    showStatus('Henter OSEBX…','');
+    const osebxMap = await fetchYahooIndex(lastDate, lastOse, '%5EOSEBX');
+
+    // Merge into navSeries
+    const existing = new Set(navSeries.map(r=>r.d));
+    let added=0, updatedOse=0;
+    for(const row of newNavRows){
+      if(!existing.has(row.d)){
+        navSeries.push({d:row.d, n:row.n, o:osebxMap[row.d]||null});
+        existing.add(row.d);
+        added++;
+      } else {
+        const idx = navSeries.findIndex(r=>r.d===row.d);
+        if(idx>=0){
+          // Always update NAV to latest value
+          navSeries[idx].n = row.n;
+          // Fill OSEBX if missing
+          if(!navSeries[idx].o && osebxMap[row.d]){
+            navSeries[idx].o = osebxMap[row.d];
+            updatedOse++;
+          }
+        }
+      }
+    }
+    // Fill OSEBX for existing entries too
+    for(const row of navSeries){
+      if(!row.o && osebxMap[row.d]){ row.o=osebxMap[row.d]; updatedOse++; }
+    }
+    navSeries.sort((a,b)=>a.d<b.d?-1:1);
+
+    const last = navSeries[navSeries.length-1];
+    showStatus(
+      `✓ Ferdig! ${added} nye datapunkt${added!==1?'er':''} lagt til. `+
+      `Siste NAV: ${fmtKr(last.n)} (${last.d})`+
+      (updatedOse?` · ${updatedOse} OSEBX-verdier fylt inn`:''),
+      'success'
+    );
+    renderAll();
+  } catch(e){
+    showStatus('⚠ Uventet feil: '+e.message,'warn');
+    console.error(e);
+  }
+
+  btn.classList.remove('loading');
+  icon.innerHTML='↻';
+}
+
+// Yahoo Finance NAV — ticker 0P00001F9P.IR fungerte i GitHub Actions
+async function fetchYahooNAV(fromDate, lastKnownNav){
+  const tickers = ['0P00001F9P.IR','0P0001BNTE.F','POAKTNY.OL'];
+  const start = Math.floor(new Date(fromDate).getTime()/1000);
+  const end   = Math.floor(Date.now()/1000) + 86400*2;
+
+  for(const ticker of tickers){
+    try{
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&period1=${start}&period2=${end}`;
+      const text = await proxyFetch(url, 12000);
+      if(!text) continue;
+      const j = JSON.parse(text);
+      const result = j?.chart?.result?.[0];
+      if(!result) continue;
+      const timestamps = result.timestamp||[];
+      const closes = result.indicators?.quote?.[0]?.close||[];
+      const rows = [];
+      timestamps.forEach((t,i)=>{
+        const v = closes[i];
+        if(v==null) return;
+        const nav = parseFloat(parseFloat(v).toFixed(4));
+        if(nav < 1000) return;
+        if(lastKnownNav && (nav > lastKnownNav*1.3 || nav < lastKnownNav*0.7)) return;
+        const d = new Date((t+3600)*1000).toISOString().slice(0,10);
+        rows.push({d, n:nav});
+      });
+      if(rows.length){
+        console.log(`Yahoo NAV (${ticker}):`, rows.slice(-3));
+        return rows;
+      }
+    }catch(e){ console.warn('Yahoo NAV ticker',ticker,'failed:',e.message); }
+  }
+  return null;
+}
+
+// Pareto AM website — primary NAV source (scrapes paretoam.com)
+async function fetchParetoNAV(lastKnownNav){
+  try{
+    const url = 'https://paretoam.com/funds/pareto-aksje-norge?country=norway';
+    const text = await proxyFetch(url, 12000);
+    if(!text) return null;
+
+    // Parse: "A | NOK | DD.MM.YYYY | NNNNN.NN |"
+    // Match andelsklasse A row
+    const match = text.match(/A\s*\|\s*NOK\s*\|\s*(\d{2}\.\d{2}\.\d{4})\s*\|\s*([\d\s]+\.[\d]+)\s*\|/);
+    if(!match) {
+      // Try alternate format
+      const m2 = text.match(/>\s*A\s*<[^>]*>[^<]*<[^>]*>\s*NOK\s*<[^>]*>[^<]*<[^>]*>\s*(\d{2}\.\d{2}\.\d{4})\s*<[^>]*>[^<]*<[^>]*>\s*([\d\.]+)/);
+      if(!m2) { console.warn('Pareto: no match in response'); return null; }
+      const dateStr = parseParetoDate(m2[1]);
+      const nav = parseFloat(m2[2].replace(/\s/g,''));
+      if(!nav || nav < 1000) return null;
+      if(lastKnownNav && (nav > lastKnownNav*1.3 || nav < lastKnownNav*0.7)) return null;
+      console.log('Pareto NAV (alt):', dateStr, nav);
+      return [{d: dateStr, n: nav}];
+    }
+
+    const dateStr = parseParetoDate(match[1]);
+    const nav = parseFloat(match[2].replace(/\s/g,''));
+    if(!nav || nav < 1000) return null;
+    if(lastKnownNav && (nav > lastKnownNav*1.3 || nav < lastKnownNav*0.7)) return null;
+    console.log('Pareto NAV:', dateStr, nav);
+    return [{d: dateStr, n: nav}];
+  }catch(e){ console.warn('Pareto fetch failed:',e.message); return null; }
+}
+
+function parseParetoDate(ddmmyyyy){
+  // Convert DD.MM.YYYY to YYYY-MM-DD
+  const [d,m,y] = ddmmyyyy.split('.');
+  return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+}
+
+// Morningstar NAV via proxy (fallback)
+async function fetchMorningstarNAV(fromDate){
+  const tokens = ['dr6pz9spfi','t92wz0sj7c','okhysb8aoh'];
+  for(const token of tokens){
+    try{
+      const url = `https://tools.morningstar.no/api/rest.svc/timeseries_price/${token}?currencyId=NOK&idtype=Morningstar&frequency=daily&outputType=JSON&startDate=${fromDate}&id=F0GBR04OMP]2]1]FONOR$$ALL`;
+      const text = await proxyFetch(url, 12000);
+      if(!text) continue;
+      const parsed = JSON.parse(text);
+      const series = parsed?.TimeSeries?.Security?.[0]?.HistoryDetail;
+      if(series && series.length){
+        const rows = series
+          .map(p=>({d:p.EndDate.slice(0,10), n:parseFloat(p.Value)}))
+          .filter(p=>p.n>1000);
+        console.log('Morningstar NAV:', rows.slice(-3));
+        return rows;
+      }
+    }catch(e){ console.warn('Morningstar token',token,'failed:',e.message); }
+  }
+  return null;
+}
+
+// Generic Yahoo Finance index fetcher
+async function fetchYahooIndex(fromDate, lastKnown, ticker){
+  try{
+    const start = Math.floor(new Date(fromDate).getTime()/1000);
+    const end   = Math.floor(Date.now()/1000) + 86400*2;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&period1=${start}&period2=${end}`;
+    const text = await proxyFetch(url, 10000);
+    if(!text) return {};
+    const j = JSON.parse(text);
+    const result = j?.chart?.result?.[0];
+    if(!result) return {};
+    const timestamps = result.timestamp||[];
+    const closes = result.indicators?.quote?.[0]?.close||[];
+    const map = {};
+    timestamps.forEach((t,i)=>{
+      const v = closes[i];
+      if(v==null) return;
+      const val = parseFloat(parseFloat(v).toFixed(4));
+      if(val < 100) return;
+      if(lastKnown && (val > lastKnown*1.35 || val < lastKnown*0.65)) return;
+      const d = new Date((t+3600)*1000).toISOString().slice(0,10);
+      map[d] = val;
+    });
+    console.log('Index',ticker,'fetched:', Object.keys(map).slice(-3), Object.values(map).slice(-3));
+    return map;
+  }catch(e){ console.warn('Index fetch failed:',e.message); return {}; }
+}
+
+// ═══════════════════════════════════════════════
+// EXCEL UPLOAD
+// ═══════════════════════════════════════════════
+function handleXlsxUpload(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  showStatus('Leser Excel-fil…','');
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+      const ws=wb.Sheets['Sheet3']||wb.Sheets[wb.SheetNames[0]];
+      const raw=XLSX.utils.sheet_to_json(ws,{header:1});
+      const newSeries=[];
+      for(let i=6;i<raw.length;i++){
+        const row=raw[i];
+        if(!row[0]||!row[1]) continue;
+        let d=row[0];
+        if(d instanceof Date) d=d.toISOString().slice(0,10);
+        else if(typeof d==='number'){
+          // Excel serial date
+          const date=new Date((d-25569)*86400*1000);
+          d=date.toISOString().slice(0,10);
+        }
+        const n=parseFloat(row[1]);
+        const o=row[2]?parseFloat(row[2]):null;
+        if(!d||isNaN(n)||n<1000) continue;
+        if(d<'2021-12-20') continue;
+        const validO=o&&!isNaN(o)&&o>100&&o<5000?parseFloat(o.toFixed(4)):null;
+        newSeries.push({d,n:parseFloat(n.toFixed(4)),o:validO});
+      }
+      if(newSeries.length<100){
+        showStatus('⚠ Fant for få rader i Excel-filen. Sjekk at Sheet3 er korrekt.','warn');
+        return;
+      }
+      newSeries.sort((a,b)=>a.d<b.d?-1:1);
+      navSeries=newSeries;
+      showStatus(`✓ Excel-fil importert! ${newSeries.length} datapunkter. Siste: ${newSeries[newSeries.length-1].d}, NAV: ${fmtKr(newSeries[newSeries.length-1].n)}`,'success');
+      renderAll();
+    }catch(err){
+      showStatus('⚠ Feil ved import: '+err.message,'warn');
+    }
+  };
+  reader.readAsBinaryString(file);
+  event.target.value='';
+}
+
+function showStatus(msg,type){
+  const bar=document.getElementById('status-bar');
+  bar.textContent=msg;
+  bar.style.display='block';
+  if(type==='success') bar.style.background='#eaf4ee',bar.style.color='var(--green)',bar.style.borderColor='#c5dece';
+  else if(type==='warn') bar.style.background='var(--gold-light)',bar.style.color='var(--gold)',bar.style.borderColor='#e8d8a0';
+  else bar.style.background='var(--blue-light)',bar.style.color='var(--blue)',bar.style.borderColor='#c5d0e8';
+  if(type==='success') setTimeout(()=>{bar.style.display='none';},5000);
+}
+
+// ═══════════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════════
+function renderAll(){
+  renderKPI();
+  renderPeriodTable();
+  renderTransactions();
+  drawCharts();
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+async function init(){
+  // Try to load nav_data.json from same folder (updated by GitHub Actions)
+  try {
+    const r = await fetch('nav_data.json', {cache:'no-cache', signal:AbortSignal.timeout(5000)});
+    if(r.ok){
+      const fresh = await r.json();
+      if(fresh && fresh.length > navSeries.length){
+        navSeries = fresh;
+        showStatus(`✓ Lastet oppdatert nav_data.json — ${fresh.length} datapunkter t.o.m. ${fresh[fresh.length-1].d}`, 'success');
+      }
+    }
+  } catch(e) {
+    // No nav_data.json found — use embedded data (fine for local use)
+    console.log('nav_data.json not found, using embedded data');
+  }
+  renderAll();
+  document.getElementById('nav-date').textContent = 'NAV ' + (navSeries[navSeries.length-1]?.d || '—');
+}
+</script>
+</body>
+</html>
